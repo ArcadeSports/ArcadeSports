@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Sports Network</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23052' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E"),
+                linear-gradient(to bottom, #000, #111);
+        }
+        
+        /* Efecto CRT */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .header {
+            padding: 10px 0;
+            text-align: center;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+            background: linear-gradient(to right, #000, #030, #000);
+            position: relative;
+            z-index: 10;
+            border-bottom: 4px solid #0f0;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            animation: textFlicker 2s infinite;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .categories {
+            width: 300px;
+            background: rgba(0, 20, 0, 0.9);
+            border-right: 2px solid #0f0;
+            overflow-y: auto;
+            padding: 10px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+        
+        .category {
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 1.2rem;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+            border-bottom: 2px solid #0f0;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .channel-list {
+            list-style-type: none;
+        }
+        
+        .channel-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(0, 20, 0, 0.6);
+            border: 2px solid #060;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .channel-item:hover {
+            background: rgba(0, 40, 0, 0.8);
+            border-color: #0f0;
+            transform: scale(1.03);
+            box-shadow: 0 0 10px #0f0;
+        }
+        
+        .channel-item::before {
+            content: "►";
+            color: #0f0;
+            margin-right: 8px;
+        }
+        
+        .channel-item.active {
+            background: rgba(0, 60, 0, 0.8);
+            border-color: #0f0;
+            box-shadow: 0 0 15px #0f0;
+        }
+        
+        .player-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-screen {
+            text-align: center;
+            padding: 20px;
+            z-index: 1;
+        }
+        
+        .welcome-title {
+            font-size: 1.8rem;
+            color: #0f0;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        .welcome-message {
+            font-size: 1rem;
+            color: #0f0;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+        
+        /* Contenedor del iFrame */
+        #iframePlayerContainer {
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 1;
+        }
+
+        #iframePlayerContainer.active {
+            display: block;
+        }
+
+        #channelStreamFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+                
+        .arcade-cabinet {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .arcade-cabinet::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to bottom, #000, transparent);
+        }
+        
+        .arcade-cabinet::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to top, #000, transparent);
+        }
+        
+        .side-panel {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: linear-gradient(to right, #000, transparent);
+        }
+        
+        .side-panel.left {
+            left: 0;
+        }
+        
+        .side-panel.right {
+            right: 0;
+            background: linear-gradient(to left, #000, transparent);
+        }
+        
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 255, 0, 0.1);
+            z-index: 11;
+            animation: scanline 6s linear infinite;
+            pointer-events: none;
+        }
+        
+        /* Botón de donación PayPal */
+        .donation-section {
+            padding: 15px;
+            background: rgba(0, 10, 0, 0.9);
+            border-top: 2px solid #0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+        
+        .paypal-btn {
+            background: #ffc439;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            color: #003087;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .paypal-btn:hover {
+            background: #ffb80a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .paypal-btn:active {
+            transform: translateY(0);
+        }
+        
+        .paypal-logo {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .paypal-text {
+            font-size: 14px;
+        }
+        
+        .main-menu-btn {
+            background: #020;
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-family: 'Press Start 2P', cursive;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            text-shadow: 0 0 5px #0f0;
+        }
+        
+        .main-menu-btn:hover {
+            background: #040;
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+        }
+        
+        .main-menu-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .channel-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 20, 0, 0.7);
+            border: 2px solid #0f0;
+            padding: 5px 10px;
+            font-size: 1.2rem;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+            z-index: 11;
+            display: none;
+        }
+        
+        .channel-number.active {
+            display: block;
+            animation: fadeOut 2s forwards;
+        }
+        
+        /* Animaciones */
+        @keyframes textFlicker {
+            0% { opacity: 1; } 3% { opacity: 0.8; } 6% { opacity: 1; } 7% { opacity: 0.8; }
+            8% { opacity: 1; } 9% { opacity: 0.8; } 10% { opacity: 1; } 100% { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
+            50% { text-shadow: 0 0 15px #0f0, 0 0 30px #0f0, 0 0 40px #0f0; }
+            100% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
+        }
+        
+        @keyframes scanline {
+            0% { top: -5%; } 100% { top: 105%; }
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; }
+        }
+        
+        /* Diseño responsivo */
+        @media (max-width: 768px) {
+            .main-content { flex-direction: column; }
+            .categories {
+                width: 100%;
+                max-height: 30vh;
+                border-right: none;
+                border-bottom: 2px solid #0f0;
+            }
+            .channel-item { padding: 8px 10px; font-size: 0.9rem; }
+            .header h1 { font-size: 1.5rem; }
+            .welcome-title { font-size: 1.5rem; }
+            .welcome-message { font-size: 0.9rem; }
+            .donation-section { 
+                padding: 10px; 
+                flex-direction: column;
+                gap: 10px;
+            }
+            .paypal-btn { 
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+            .main-menu-btn { 
+                padding: 6px 10px; 
+                font-size: 0.8rem; 
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ARCADE SPORTS NETWORK</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="categories">
+                <div class="category">
+                    <div class="category-title">ESPN NETWORKS</div>
+                    <ul class="channel-list">
+                        <li class="channel-item" onclick="playChannel('espn2', 'ESPN 2', 1, this)">ESPN 2 (CANAL 1)</li>
+                        <li class="channel-item" onclick="playChannel('espn3', 'ESPN 3', 6, this)">ESPN 3 (CANAL 6)</li>
+                        <li class="channel-item" onclick="playChannel('espn4', 'ESPN 4', 4, this)">ESPN 4 (CANAL 4)</li>
+                    </ul>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">TNT NETWORKS</div>
+                    <ul class="channel-list">
+                        <li class="channel-item" onclick="playChannel('tntsport', 'TNT SPORT', 3, this)">TNT SPORT (CANAL 3)</li>
+                        <li class="channel-item" onclick="playChannel('tntsportpremium', 'TNT SPORT PREMIUM', 8, this)">TNT SPORT PREMIUM (CANAL 8)</li>
+                        <li class="channel-item" onclick="playChannel('tntus', 'TNT US (DAZN 1)', 9, this)">TNT US (DAZN 1) (CANAL 9)</li>
+                    </ul>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">BASKETBALL</div>
+                    <ul class="channel-list">
+                        <li class="channel-item" onclick="playChannel('nba1', 'NBA TV', 2, this)">NBA 1 (CANAL 2)</li>
+                    </ul>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">FOOTBALL</div>
+                    <ul class="channel-list">
+                        <li class="channel-item" onclick="playChannel('daznlaliga', 'DAZN LA LIGA', 5, this)">DAZN LA LIGA (CANAL 5)</li>
+                        <li class="channel-item" onclick="playChannel('foxsports', 'FOX SPORTS MX', 10, this)">FOX SPORTS MX (CANAL 10)</li>
+                    </ul>
+                </div>
+                
+                <div class="category">
+                    <div class="category-title">OTROS</div>
+                    <ul class="channel-list">
+                        <li class="channel-item" onclick="playChannel('canal5mx', 'CANAL 5 MX', 7, this)">CANAL 5 MX (CANAL 7)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="player-container">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-title">BIENVENIDO AL ARCADE SPORTS NETWORK</div>
+                    <div class="welcome-message">
+					 Selecciona un canal del menú para empezar a ver tu contenido deportivo favorito.
+                    </div>
+					.welcome-screen {
+    text-align: center;
+    padding: 20px;
+    z-index: 1;
+    display: flex;           /* Agregar esto */
+    flex-direction: column;  /* Agregar esto */
+    justify-content: center; /* Agregar esto */
+    align-items: center;     /* Agregar esto */
+    height: 100%;           /* Agregar esto */
+}
+					
+					
+                </div>
+                
+                <div id="iframePlayerContainer">
+                    <iframe id="channelStreamFrame"
+                            allow="autoplay; encrypted-media; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                </div>
+                
+                <div class="arcade-cabinet">
+                    <div class="side-panel left"></div>
+                    <div class="side-panel right"></div>
+                </div>
+                
+                <div class="channel-number" id="channelNumber"></div>
+                <div class="scanline"></div>
+            </div>
+        </div>
+        
+        <div class="donation-section">
+            <button class="main-menu-btn" onclick="showWelcomeScreen()">MAIN MENU</button>
+            <a href="https://paypal.me/saul78789?country.x=GT&locale.x=es_XC" target="_blank" class="paypal-btn">
+                <span class="paypal-text">Donar con</span>
+                <span class="paypal-logo">Pay<span style="color: #009cde;">Pal</span></span>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+    // URLs de video para los iframes
+    const videoUrls = {
+        'espn2': 'https://streamtp4.com/global1.php?stream=espn2',
+        'nba1': 'https://streamtp4.com/global1.php?stream=nba2',
+        'tntsport': 'https://streamtp4.com/global1.php?stream=tnt_2_gb',
+        'espn4': 'https://streamtp4.com/global1.php?stream=espn4',
+        'daznlaliga': 'https://streamtp4.com/global1.php?stream=dazn_laliga',
+        'espn3': 'https://streamtp4.com/global1.php?stream=espn3',
+        'canal5mx': 'https://streamtp4.com/global1.php?stream=canal5mx',
+        'tntsportpremium': 'https://streamtp4.com/global1.php?stream=tntsports',
+        'tntus': 'https://streamtp4.com/global1.php?stream=dazn1',
+        'foxsports': 'https://streamtp4.com/global1.php?stream=foxsportsmx'
+    };
+
+    // Elementos del DOM
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const iframePlayerContainer = document.getElementById('iframePlayerContainer');
+    const channelStreamFrame = document.getElementById('channelStreamFrame');
+    const channelNumberElement = document.getElementById('channelNumber');
+
+    // Al cargar la página
+    window.onload = function() {
+        if(iframePlayerContainer) iframePlayerContainer.classList.remove('active');
+        if(welcomeScreen) welcomeScreen.style.display = 'block';
+    };
+
+    // Función para reproducir un canal
+    function playChannel(channelId, channelName, channelNumber, clickedElement) {
+        if(welcomeScreen) welcomeScreen.style.display = 'none';
+
+        if(iframePlayerContainer) {
+            iframePlayerContainer.classList.add('active');
+        }
+
+        if(channelStreamFrame && videoUrls[channelId]) {
+            channelStreamFrame.src = videoUrls[channelId];
+        } else {
+            console.error("No se encontró channelStreamFrame o la URL de video para " + channelId);
+            showWelcomeScreen();
+            return; 
+        }
+
+        // Actualizar elementos activos en la lista de canales
+        const channelItems = document.querySelectorAll('.channel-item');
+        channelItems.forEach(item => {
+            item.classList.remove('active');
+        });
+
+        if (clickedElement) {
+             clickedElement.classList.add('active');
+        }
+
+        // Mostrar número de canal
+        if(channelNumberElement) {
+            channelNumberElement.textContent = `CH-${channelNumber}`;
+            channelNumberElement.classList.remove('active');
+            void channelNumberElement.offsetWidth;
+            channelNumberElement.classList.add('active');
+        }
+    }
+
+    // Función para mostrar la pantalla de bienvenida
+    function showWelcomeScreen() {
+        if(channelStreamFrame) {
+            channelStreamFrame.src = 'about:blank';
+        }
+        if(iframePlayerContainer) {
+            iframePlayerContainer.classList.remove('active');
+        }
+
+        if(welcomeScreen) welcomeScreen.style.display = 'block';
+
+        // Desmarcar cualquier canal activo
+        const channelItems = document.querySelectorAll('.channel-item');
+        channelItems.forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+</script>
+</body>
+</html>
