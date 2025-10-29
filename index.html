@@ -54,6 +54,27 @@
             z-index: 10;
             border-bottom: 4px solid #0f0;
         }
+
+        /* Botón hamburger (visible en móvil) */
+        .hamburger {
+            display: none;
+            position: absolute;
+            left: 10px;
+            top: 12px;
+            z-index: 20;
+            background: transparent;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Cuando el menú está abierto, evitar scroll de fondo */
+        body.no-scroll {
+            overflow: hidden;
+        }
         
         .header h1 {
             font-size: 2rem;
@@ -344,39 +365,155 @@
         
         /* Diseño responsivo */
         @media (max-width: 768px) {
-            .main-content { flex-direction: column; }
-            .categories {
-                width: 100%;
-                max-height: 30vh;
-                border-right: none;
-                border-bottom: 2px solid #0f0;
+            body {
+                font-size: 10px;
             }
-            .channel-item { padding: 8px 10px; font-size: 0.9rem; }
-            .header h1 { font-size: 1.5rem; }
-            .welcome-title { font-size: 1.5rem; }
-            .welcome-message { font-size: 0.9rem; }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .main-content { 
+                flex-direction: column; 
+            }
+            
+            .categories {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                max-height: 100vh;
+                border-right: 2px solid #0f0;
+                border-bottom: none;
+                padding: 60px 8px 8px 8px;
+                z-index: 99;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+            }
+            
+            .categories.active {
+                left: 0;
+            }
+            
+            .category {
+                margin-bottom: 15px;
+            }
+            
+            .category-title {
+                font-size: 0.7rem;
+                padding-bottom: 8px;
+                margin-bottom: 8px;
+            }
+            
+            .channel-item { 
+                padding: 12px 8px; 
+                font-size: 0.6rem;
+                margin: 8px 0;
+                line-height: 1.4;
+            }
+            
+            .channel-item::before {
+                font-size: 0.7rem;
+                margin-right: 6px;
+            }
+            
+            .header {
+                padding: 15px 10px;
+            }
+            
+            .header h1 { 
+                font-size: 0.9rem;
+                letter-spacing: 1px;
+                line-height: 1.3;
+            }
+            
+            .player-container {
+                min-height: 50vh;
+            }
+            
+            .welcome-title { 
+                font-size: 0.9rem;
+                line-height: 1.5;
+                margin-bottom: 15px;
+            }
+            
+            .welcome-message { 
+                font-size: 0.65rem;
+                line-height: 1.6;
+                padding: 0 10px;
+            }
+            
             .donation-section { 
-                padding: 10px; 
+                padding: 12px 10px; 
                 flex-direction: column;
                 gap: 10px;
             }
+            
             .paypal-btn { 
                 padding: 10px 20px;
-                font-size: 12px;
+                font-size: 11px;
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
             }
+            
             .main-menu-btn { 
-                padding: 6px 10px; 
-                font-size: 0.8rem; 
+                padding: 10px 15px; 
+                font-size: 0.6rem;
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .channel-number {
+                top: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 5px 8px;
+            }
+            
+            .scanline {
+                height: 2px;
             }
         }
+        
+        @media (max-width: 480px) {
+            .header h1 { 
+                font-size: 0.7rem;
+            }
+            
+            .category-title {
+                font-size: 0.6rem;
+            }
+            
+            .channel-item { 
+                font-size: 0.55rem;
+                padding: 10px 6px;
+            }
+            
+            .welcome-title { 
+                font-size: 0.75rem;
+            }
+            
+            .welcome-message { 
+                font-size: 0.55rem;
+            }
+            
+            .main-menu-btn { 
+                font-size: 0.55rem;
+                padding: 8px 12px;
+            }
+       
         
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>ARCADE SPORTS NETWORK</h1>
-        </div>
+                <button class="hamburger" id="menuToggle" aria-label="Abrir menú de canales" aria-expanded="false">☰</button>
+                <h1>ARCADE SPORTS NETWORK</h1>
+            </div>
         
         <div class="main-content">
             <div class="categories">
@@ -467,25 +604,72 @@
     
 <script>
     const videoUrls = {
-   	'espn': 'https://streamtp11.com/global1.php?stream=espn',
-	'espn2': 'https://streamtp11.com/global1.php?stream=espn2',
-    'nba1': 'https://streamtp11.com/global1.php?stream=nba2',
-    'tntsport': 'https://streamtp11.com/global1.php?stream=tnt_2_gb',
-    'espn4': 'https://streamtp11.com/global1.php?stream=espn4',
-    'espn3': 'https://streamtp11.com/global1.php?stream=espn3',
-    'canal5mx': 'https://streamtp11.com/global1.php?stream=canal5mx',
-    'tntsportpremium': 'https://streamtp11.com/global1.php?stream=tntsports',
-    'tntus': 'https://streamtp11.com/global1.php?stream=dazn1',
-    'foxsports': 'https://streamtp11.com/global1.php?stream=foxsportsmx',
-    'directv': 'https://hoca4u.xyz/player/directvhd.php',
-	'espnplus': 'https://streamtp11.com/global1.php?stream=espnplus10',
-	'espnplus1': 'https://streamtp11.com/global1.php?stream=espnplus1',
-	'espnplus2': 'https://streamtp11.com/global1.php?stream=espnplus2',	
-	'tycsports': 'https://streamtp11.com/global1.php?stream=tycsports',
-	'directv': 'https://streamtp11.com/global1.php?stream=golperu',
-	'skysorts': 'https://www.capoplay.net/capodeportes.php',
-};
+        // Cada entrada puede ser una string (URL única) o un objeto con variantes por calidad
+        'espn': 'https://streamtp11.com/global1.php?stream=espn',
+        'espn2': 'https://streamtp11.com/global1.php?stream=espn2',
+        'nba1': 'https://streamtp11.com/global1.php?stream=nba2',
+        'tntsport': 'https://streamtp11.com/global1.php?stream=tnt_2_gb',
+        'espn4': 'https://streamtp11.com/global1.php?stream=espn4',
+        'espn3': 'https://streamtp11.com/global1.php?stream=espn3',
+        'canal5mx': 'https://streamtp11.com/global1.php?stream=canal5mx',
+        'tntsportpremium': 'https://streamtp11.com/global1.php?stream=tntsports',
+        'tntus': 'https://streamtp11.com/global1.php?stream=dazn1',
+        'foxsports': 'https://streamtp11.com/global1.php?stream=foxsportsmx',
+        'directv': 'https://hoca4u.xyz/player/directvhd.php',
+        'espnplus': 'https://streamtp11.com/global1.php?stream=espnplus10',
+        'espnplus1': 'https://streamtp11.com/global1.php?stream=espnplus1',
+        'espnplus2': 'https://streamtp11.com/global1.php?stream=espnplus2',
+        'tycsports': 'https://streamtp11.com/global1.php?stream=tycsports',
+        'golperu': 'https://streamtp11.com/global1.php?stream=golperu',
+        'skysorts': 'https://www.capoplay.net/capodeportes.php'
+    };
 
+    /**
+     * Detectar la calidad de la conexión del usuario.
+     * Retorna 'high' | 'medium' | 'low'. Usa Network Information API cuando esté disponible.
+     */
+    function detectNetworkQuality() {
+        try {
+            const nav = navigator;
+            // Network Information API (no soportada por todos los navegadores)
+            if (nav.connection) {
+                const conn = nav.connection;
+                // effectiveType: 'slow-2g', '2g', '3g', or '4g'
+                const type = conn.effectiveType || '';
+                const downlink = conn.downlink || 0; // Mbps estimado
+
+                if (type.includes('4g') || downlink >= 5) return 'high';
+                if (type.includes('3g') || downlink >= 1.5) return 'medium';
+                return 'low';
+            }
+        } catch (e) {
+            console.warn('Network information not available', e);
+        }
+
+        // Fallback conservador: asumir medium
+        return 'medium';
+    }
+
+    /**
+     * Elige la mejor URL disponible para el canal según la calidad detectada.
+     * videoUrls admite tanto strings como objetos con claves 'low','medium','high','default'.
+     */
+    function chooseStreamUrl(channelId) {
+        const src = videoUrls[channelId];
+        if (!src) return null;
+
+        // Si la entrada es string, devolverla directamente
+        if (typeof src === 'string') return src;
+
+        // Si es objeto, buscar según la calidad detectada
+        const quality = detectNetworkQuality();
+        if (src[quality]) return src[quality];
+        if (src['medium']) return src['medium'];
+        if (src['default']) return src['default'];
+        // ultima opción: tomar cualquier valor del objeto
+        const keys = Object.keys(src);
+        return keys.length ? src[keys[0]] : null;
+    }
 
     // Elementos del DOM
     const welcomeScreen = document.getElementById('welcomeScreen');
@@ -507,8 +691,16 @@
             iframePlayerContainer.classList.add('active');
         }
 
-        if(channelStreamFrame && videoUrls[channelId]) {
-            channelStreamFrame.src = videoUrls[channelId];
+        if(channelStreamFrame) {
+            const chosen = chooseStreamUrl(channelId);
+            if (chosen) {
+                channelStreamFrame.src = chosen;
+                console.log(`playChannel: selected stream for ${channelId} -> ${chosen}`);
+            } else {
+                console.error('No URL found for channel', channelId);
+                showWelcomeScreen();
+                return;
+            }
         } else {
             console.error("No se encontró channelStreamFrame o la URL de video para " + channelId);
             showWelcomeScreen();
@@ -551,10 +743,33 @@
             item.classList.remove('active');
         });
     }
+
+    // Toggle del menú móvil (hamburger)
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const categories = document.querySelector('.categories');
+        if (menuToggle && categories) {
+            menuToggle.addEventListener('click', function() {
+                const active = categories.classList.toggle('active');
+                document.body.classList.toggle('no-scroll', active);
+                menuToggle.setAttribute('aria-expanded', active);
+            });
+
+            // Al seleccionar un canal, cerrar el menú en móvil para mejor UX
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (categories.classList.contains('active')) {
+                        categories.classList.remove('active');
+                        document.body.classList.remove('no-scroll');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+        }
+    });
 </script>
 </body>
 </html>
-
 
 
 
