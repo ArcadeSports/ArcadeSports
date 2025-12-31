@@ -185,9 +185,16 @@
             z-index: 1;
         }
 
-        #iframePlayerContainer.active {
-            display: block;
-        }
+        #iframePlayerContainer {
+    width: 100%;
+    /* Mantiene la proporción de TV para no deformar la imagen */
+    aspect-ratio: 16 / 9;
+    max-height: 100%;
+    display: none;
+    z-index: 1;
+    /* Centra el reproductor vertical y horizontalmente */
+    margin: auto;
+	}
 
         #channelStreamFrame {
             width: 100%;
@@ -543,7 +550,7 @@
                         <li class="channel-item" onclick="playChannel('directv', 'DIRECTV', 11, this)">DIRECTV </li>
                         <li class="channel-item" onclick="playChannel('foxsports', 'FOX SPORTS MX', 10, this)">FOX SPORTS MX </li>
 						<li class="channel-item" onclick="playChannel('tycsports', 'tycsports', 44, this)">TYCSPORTS </li>
-						<li class="channel-item" onclick="playChannel('directv', 'golperu', 43, this)">GOL PERU </li>
+						<li class="channel-item" onclick="playChannel('golperu', 'golperu', 43, this)">GOL PERU </li>
 			<li class="channel-item" onclick="playChannel('skysorts', 'SKY SPORTS', 50, this)">SKYSPORTS </li>
                     </ul>
                 </div>
@@ -569,9 +576,10 @@
                 
                 <div id="iframePlayerContainer">
                     <iframe id="channelStreamFrame"
-                            allow="autoplay; encrypted-media; picture-in-picture" 
-                            allowfullscreen>
-                        </iframe>
+							sandbox="allow-scripts allow-same-origin allow-presentation"
+							allow="autoplay; encrypted-media; picture-in-picture" 
+							allowfullscreen>
+					</iframe>
                 </div>
                 
                 <div class="arcade-cabinet">
