@@ -1,340 +1,221 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Arcade Sports</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta charset="UTF-8">
+<title>Arcade Sports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    /* ===== CSS ARCADE & FUENTES ===== */
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    body {
-      margin: 0;
-      background: radial-gradient(circle at center, #020202, #000);
-      color: #00ff66;
-      font-family: 'Press Start 2P', monospace;
-      overflow: hidden;
-      height: 100vh;
-    }
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#000;
+  font-family:'Press Start 2P',monospace;
+  color:#00ff66;
+  overflow:hidden;
+}
 
-    /* ===== CONTENEDOR PRINCIPAL (RESPONSIVE) ===== */
-    #app {
-      display: flex;
-      height: 100vh;
-      border: 4px solid #00ff66;
-      box-shadow: 0 0 20px #00ff66;
-      box-sizing: border-box;
-      flex-direction: row; /* Horizontal en PC */
-    }
+/* APP */
+#app{
+  height:100vh;
+  position:relative;
+  border:4px solid #00ff66;
+  box-shadow:0 0 25px #00ff66;
+}
 
-    /* ===== MENU LATERAL / INFERIOR ===== */
-    #channelList {
-      width: 260px;
-      background: linear-gradient(180deg, #020202, #060606);
-      border-right: 2px solid #00ff66;
-      box-shadow: inset -4px 0 10px rgba(0,255,100,.3);
-      overflow-y: auto;
-      flex-shrink: 0;
-      -webkit-overflow-scrolling: touch;
-    }
+/* PLAYER */
+#playerArea{
+  width:100%;
+  height:100%;
+  position:relative;
+}
+video{
+  width:100%;
+  height:100%;
+  background:#000;
+}
 
-    .channel-item {
-      padding: 12px;
-      cursor: pointer;
-      border-bottom: 1px solid #00441b;
-      font-size: 11px;
-      letter-spacing: 1px;
-      text-shadow: 0 0 4px #00ff66;
-      transition: all .15s ease;
-      touch-action: manipulation;
-      user-select: none;
-    }
+/* OVERLAY */
+#overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-shadow:0 0 10px #00ff66;
+  font-size:14px;
+  pointer-events:none;
+}
+.hidden{display:none}
 
-    .channel-item:hover {
-      background: #00ff66;
-      color: #000;
-      text-shadow: none;
-      transform: scale(1.03);
-    }
+/* SCANLINES */
+#scanlines{
+  pointer-events:none;
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    rgba(0,0,0,0) 50%,
+    rgba(0,0,0,.25) 50%
+  );
+  background-size:100% 4px;
+  opacity:.3;
+}
 
-    .channel-item.active {
-      background: #00ff66;
-      color: #000;
-      box-shadow: inset 0 0 10px rgba(0,0,0,.6), 0 0 12px #00ff66;
-    }
+/* HAMBURGER */
+#hamburger{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:10;
+  font-size:18px;
+  cursor:pointer;
+  background:#000;
+  border:2px solid #00ff66;
+  padding:8px 12px;
+  box-shadow:0 0 10px #00ff66;
+}
 
-    /* ===== ÁREA DEL REPRODUCTOR ===== */
-    #playerArea {
-      flex: 1;
-      position: relative;
-      background: #000;
-      border-left: 4px solid #00ff66;
-      box-shadow: inset 0 0 25px rgba(0,255,100,.25);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+/* MENU */
+#menu{
+  position:absolute;
+  inset:0;
+  background:#000;
+  transform:translateX(-100%);
+  transition:.25s;
+  z-index:9;
+  overflow-y:auto;
+}
+#menu.open{transform:translateX(0)}
 
-    #videoPlayerContainer {
-      width: 100%;
-      height: 100%;
-      display: none;
-      position: relative;
-      z-index: 1;
-    }
+.channel{
+  padding:18px;
+  border-bottom:1px solid #003319;
+  cursor:pointer;
+}
+.channel:hover,
+.channel.active{
+  background:#00ff66;
+  color:#000;
+}
 
-    video {
-      width: 100%;
-      height: 100%;
-      background: black;
-      outline: none;
-    }
-
-    /* ===== EFECTOS VISUALES ===== */
-    #crt {
-      pointer-events: none;
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(0,0,0,0) 0px,
-        rgba(0,0,0,0) 2px,
-        rgba(0,0,0,0.1) 3px
-      );
-      mix-blend-mode: overlay;
-      animation: crtFlicker 0.15s infinite;
-      z-index: 4;
-    }
-
-    @keyframes crtFlicker {
-      0% { opacity: 0.1; }
-      50% { opacity: 0.2; }
-      100% { opacity: 0.1; }
-    }
-
-    .glitch { animation: glitch 0.4s linear; }
-    @keyframes glitch {
-      0% { transform: translate(0); filter: hue-rotate(0deg); }
-      20% { transform: translate(-3px, 2px); }
-      40% { transform: translate(3px, -2px); }
-      100% { transform: translate(0); filter: hue-rotate(360deg); }
-    }
-
-    #welcomeScreen {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      z-index: 2;
-      text-shadow: 0 0 8px #00ff66;
-      animation: blink 1.5s infinite;
-      text-align: center;
-    }
-
-    @keyframes blink {
-      0%,100% { opacity: 1; }
-      50% { opacity: .3; }
-    }
-
-    #playerOverlay {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,.85);
-      z-index: 5;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-size: 12px;
-    }
-
-    /* ===== ADAPTACIÓN PARA CELULARES ===== */
-    @media (max-width: 768px) {
-      #app { flex-direction: column; }
-      
-      #playerArea {
-        height: 40%; /* Video arriba */
-        flex: none;
-        border-left: none;
-        border-bottom: 4px solid #00ff66;
-      }
-
-      #channelList {
-        width: 100%;
-        height: 60%; /* Lista abajo */
-        border-right: none;
-      }
-
-      .channel-item {
-        padding: 18px 15px; /* Más fácil de tocar */
-        font-size: 12px;
-      }
-
-      #welcomeScreen { font-size: 10px; }
-    }
-  </style>
+/* GLITCH */
+.glitch{
+  animation:glitch .2s linear 2;
+}
+@keyframes glitch{
+  0%{transform:translate(0)}
+  25%{transform:translate(3px,-2px)}
+  50%{transform:translate(-3px,2px)}
+  75%{transform:translate(2px,1px)}
+}
+</style>
 </head>
-<body>
 
+<body>
 <div id="app">
 
-  <div id="channelList">
-    <div class="channel-item" onclick="playChannel('espn1', this)">ESPN</div>
-    <div class="channel-item" onclick="playChannel('espn2', this)">ESPN 2</div>
-    <div class="channel-item" onclick="playChannel('espn3', this)">ESPN 3</div>
-    <div class="channel-item" onclick="playChannel('espn4', this)">ESPN 4</div>
-    <div class="channel-item" onclick="playChannel('espn5', this)">ESPN 5</div>
-    <div class="channel-item" onclick="playChannel('espn6', this)">ESPN 6</div>
-    <div class="channel-item" onclick="playChannel('espn7', this)">ESPN 7</div>
-    <div class="channel-item" onclick="playChannel('espnmx', this)">ESPN MX</div>
-    <div class="channel-item" onclick="playChannel('winsports', this)">WinSports</div>
-    <div class="channel-item" onclick="playChannel('winsports+', this)">WinSports+</div>
-    <div class="channel-item" onclick="playChannel('directsports', this)">DirecTV Sports</div>
-    <div class="channel-item" onclick="playChannel('tycsports', this)">TyC Sports</div>
-    <div class="channel-item" onclick="playChannel('laligahypermotion', this)">LaLiga HyperMotion</div>
-    <div class="channel-item" onclick="playChannel('capodeportes', this)">Capo Deportes</div>
-  </div>
+  <div id="hamburger">☰</div>
+
+  <div id="menu"></div>
 
   <div id="playerArea">
-    <div id="crt"></div>
-
-    <div id="welcomeScreen">
-      INSERT COIN<br><br>SELECCIONA CANAL
-    </div>
-
-    <div id="videoPlayerContainer">
-      <video id="videoPlayer" controls autoplay playsinline muted></video>
-    </div>
-
-    <div id="playerOverlay">
-      <div>
-        <p>REINTENTANDO...</p>
-      </div>
-    </div>
+    <video id="video" autoplay muted playsinline></video>
+    <div id="overlay">PULSA ☰ PARA CANALES</div>
+    <div id="scanlines"></div>
   </div>
 
 </div>
 
-<audio id="beepSound" preload="auto">
-  <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav" type="audio/wav">
-</audio>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<audio id="beep" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav"></audio>
 
 <script>
-/* ===== CONFIGURACIÓN ===== */
-const videoUrls = {
-  espn1: ["https://florcd1.crackstreamslivehd.com/espn/index.m3u8?token=df487b0bcbfe9a1a3b3b2e6ef1fc6165be80b741-67-1768193218-1768139218&ip=190.106.222.109"],
-  espn2: ["https://99a1.crackstreamslivehd.com/espn2/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=0a1cbf7739df157db7b127c2c7fc497a59eae943-b8-1768193842-1768139842"],
-  espn3: ["https://24a1.crackstreamslivehd.com/espn3/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=9a1a64ad1595b43092bba0bc7b28a9df1a41a49f-17-1768194011-1768140011"],
-  espn4: ["https://99a1.crackstreamslivehd.com/espn4/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=af2f530fa7f3ad16605136f05de72319fc128e0a-8b-1768194045-1768140045"],
-  espn5: ["https://pecdl1.crackstreamslivehd.com/espn5/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=b134f7a217fe4423b5660cbf01df2fc2df37aeb9-5d-1768195237-1768141237"],
-  espn6: ["https://51a1.crackstreamslivehd.com/espn6/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=4700a29c1a00370ee6a472ecb53f30d302c747a4-37-1768195241-1768141241"],
-  espn7: ["https://57b1.crackstreamslivehd.com/espn7/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=e5e425a5ce24423947d8de95f571a22fa126ce7b-af-1768195313-1768141313"],
-  espnmx: ["https://57b1.crackstreamslivehd.com/espnmx/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=e41e4e1840c35eba059dcabaac2486187ee2ffb7-63-1768195362-1768141362"],
-  winsports: ["https://98ca2.crackstreamslivehd.com/winsports/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=a89eee5a680479bff43622c51b9ba1e6c82ce108-d8-1768195445-1768141445"],
-  "winsports+": ["https://pecdl1.crackstreamslivehd.com/winplus/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=2da35cb5a31bdb6e176990643553a316fc99d7a2-77-1768195483-1768141483"],
-  directsports: ["https://14c51.crackstreamslivehd.com/dsports/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=580485af03a01450a005af126bb9cc620f1db971-f7-1768195518-1768141518"],
-  tycsports: ["https://24a1.crackstreamslivehd.com/tycinternacional/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=384880a4bf97fac9028883afb9aba83d9c7a12c7-f0-1768195611-1768141611"],
-  laligahypermotion: ["https://florcd1.crackstreamslivehd.com/laligahypermotion/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=ea2eba7d908a52563f2bb0d12654be5c8c98233a-16-1768195644-1768141644"],
-  capodeportes: ["https://d2.merichunidya.com:1686/hls/capodeportes.m3u8"]
+const channels={
+  "ESPN 1":"https://florcd1.crackstreamslivehd.com/espn/index.m3u8",
+  "ESPN 2":"https://99a1.crackstreamslivehd.com/espn2/tracks-v1a1/mono.m3u8",
+  "ESPN 3":"https://24a1.crackstreamslivehd.com/espn3/tracks-v1a1/mono.m3u8",
+  "ESPN 4":"https://99a1.crackstreamslivehd.com/espn4/tracks-v1a1/mono.m3u8",
+  "ESPN 5":"https://pecdl1.crackstreamslivehd.com/espn5/tracks-v1a1/mono.m3u8",
+  "ESPN 6":"https://51a1.crackstreamslivehd.com/espn6/tracks-v1a1/mono.m3u8",
+  "ESPN 7":"https://57b1.crackstreamslivehd.com/espn7/tracks-v1a1/mono.m3u8",
+  "WinSports":"https://98ca2.crackstreamslivehd.com/winsports/tracks-v1a1/mono.m3u8",
+  "TyC Sports":"https://24a1.crackstreamslivehd.com/tycinternacional/tracks-v1a1/mono.m3u8",
+  "Capo Deportes":"https://d2.merichunidya.com:1686/hls/capodeportes.m3u8"
 };
 
-let hls = null;
-let currentChannel = null;
-let currentIndex = 0;
-let currentMenuIndex = 0;
+const menu=document.getElementById("menu");
+const video=document.getElementById("video");
+const overlay=document.getElementById("overlay");
+const beep=document.getElementById("beep");
+const burger=document.getElementById("hamburger");
 
-const video = document.getElementById("videoPlayer");
-const overlay = document.getElementById("playerOverlay");
+let hls;
+let index=0;
+const keys=Object.keys(channels);
 
-function playBeep() {
-  const beep = document.getElementById("beepSound");
-  if (beep) { beep.currentTime = 0; beep.volume = 0.3; beep.play().catch(()=>{}); }
+/* MENU BUILD */
+keys.forEach((name,i)=>{
+  const d=document.createElement("div");
+  d.className="channel";
+  d.textContent=name;
+  d.onclick=()=>play(i);
+  menu.appendChild(d);
+});
+
+/* TOGGLE MENU */
+function toggleMenu(){
+  menu.classList.toggle("open");
 }
+burger.onclick=toggleMenu;
 
-function playHLS(url) {
-  overlay.style.display = "none";
+/* PLAY */
+function play(i){
+  index=i;
+  document.querySelectorAll(".channel").forEach(c=>c.classList.remove("active"));
+  document.querySelectorAll(".channel")[i].classList.add("active");
+
+  menu.classList.remove("open");
+  overlay.textContent="CARGANDO...";
+  overlay.classList.remove("hidden");
+
+  beep.currentTime=0;beep.play();
   video.classList.add("glitch");
-  setTimeout(() => video.classList.remove("glitch"), 400);
+  setTimeout(()=>video.classList.remove("glitch"),200);
 
-  if (hls) { hls.destroy(); hls = null; }
-
-  if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = url;
+  if(hls)hls.destroy();
+  if(Hls.isSupported()){
+    hls=new Hls();
+    hls.loadSource(channels[keys[i]]);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+      video.play();
+      overlay.classList.add("hidden");
+    });
+    hls.on(Hls.Events.ERROR,()=>{
+      overlay.textContent="REINTENTANDO...";
+      setTimeout(()=>play(i),2000);
+    });
+  }else{
+    video.src=channels[keys[i]];
     video.play();
-    return;
   }
 
-  hls = new Hls({ lowLatencyMode: true });
-  hls.loadSource(url);
-  hls.attachMedia(video);
-  hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-  hls.on(Hls.Events.ERROR, (e, data) => { if (data.fatal) retryStream(); });
+  localStorage.setItem("lastChannel",i);
 }
 
-function retryStream() {
-  overlay.style.display = "flex";
-  const list = videoUrls[currentChannel];
-  currentIndex = (currentIndex + 1) % list.length;
-  setTimeout(() => playHLS(list[currentIndex]), 3000);
-}
-
-function playChannel(channelId, el) {
-  playBeep();
-  currentChannel = channelId;
-  currentIndex = 0;
-  localStorage.setItem("lastChannel", channelId);
-
-  document.getElementById("welcomeScreen").style.display = "none";
-  document.getElementById("videoPlayerContainer").style.display = "block";
-
-  const items = document.querySelectorAll(".channel-item");
-  items.forEach(c => c.classList.remove("active"));
-  el.classList.add("active");
-  currentMenuIndex = Array.from(items).indexOf(el);
-
-  playHLS(videoUrls[channelId][0]);
-}
-
-/* TECLADO */
-document.addEventListener("keydown", e => {
-  const items = document.querySelectorAll(".channel-item");
-  if (!items.length) return;
-
-  if (e.key === "ArrowDown") {
-    e.preventDefault();
-    currentMenuIndex = (currentMenuIndex + 1) % items.length;
-    items[currentMenuIndex].scrollIntoView({ block: "nearest" });
-    items.forEach(i => i.classList.remove("active"));
-    items[currentMenuIndex].classList.add("active");
-    playBeep();
-  } else if (e.key === "ArrowUp") {
-    e.preventDefault();
-    currentMenuIndex = (currentMenuIndex - 1 + items.length) % items.length;
-    items[currentMenuIndex].scrollIntoView({ block: "nearest" });
-    items.forEach(i => i.classList.remove("active"));
-    items[currentMenuIndex].classList.add("active");
-    playBeep();
-  } else if (e.key === "Enter") {
-    items[currentMenuIndex].click();
-  } else if (e.key === "f") {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-    else document.exitFullscreen();
-  }
+/* KEYBOARD */
+document.addEventListener("keydown",e=>{
+  if(e.key==="h")toggleMenu();
+  if(e.key==="ArrowDown")play((index+1)%keys.length);
+  if(e.key==="ArrowUp")play((index-1+keys.length)%keys.length);
+  if(e.key==="Enter")video.requestFullscreen();
 });
 
-window.addEventListener("load", () => {
-  const last = localStorage.getItem("lastChannel");
-  if (last && videoUrls[last]) {
-    const el = document.querySelector(`[onclick*="${last}"]`);
-    if (el) playChannel(last, el);
-  }
-});
+/* RESTORE */
+const last=localStorage.getItem("lastChannel");
+if(last!==null)play(Number(last));
 </script>
-
 </body>
 </html>
