@@ -173,38 +173,55 @@ burger.onclick=toggleMenu;
 
 /* PLAY */
 function play(i){
-  index=i;
+  index = i;
+
   document.querySelectorAll(".channel").forEach(c=>c.classList.remove("active"));
   document.querySelectorAll(".channel")[i].classList.add("active");
 
   menu.classList.remove("open");
-  overlay.textContent="CARGANDO...";
+
+  overlay.textContent = unlocked
+    ? "CARGANDO..."
+    : "TOCA PARA REPRODUCIR";
   overlay.classList.remove("hidden");
 
-  beep.currentTime=0;beep.play();
-  video.classList.add("glitch");
-  setTimeout(()=>video.classList.remove("glitch"),200);
-
-  if(hls)hls.destroy();
-  if(Hls.isSupported()){
-    hls=new Hls();
-    hls.loadSource(channels[keys[i]]);
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-      video.play();
-      overlay.classList.add("hidden");
-    });
-    hls.on(Hls.Events.ERROR,()=>{
-      overlay.textContent="REINTENTANDO...";
-      setTimeout(()=>play(i),2000);
-    });
-  }else{
-    video.src=channels[keys[i]];
-    video.play();
+  if(hls){
+    hls.destroy();
+    hls = null;
   }
 
-  localStorage.setItem("lastChannel",i);
+  if(Hls.isSupported()){
+    hls = new Hls();
+    hls.loadSource(channels[keys[i]]);
+    hls.attachMedia(video);
+  } else {
+    video.src = channels[keys[i]];
+  }
+
+  localStorage.setItem("lastChannel", i);
 }
+hls.on(Hls.Events.ERROR, (event, data) => {
+  if (data.fatal) {
+    overlay.textContent = "CANAL NO DISPONIBLE";
+    overlay.classList.remove("hidden");
+  }
+});
+
+/* UNLOCK */
+function unlockPlayer(){
+  if(unlocked) return;
+
+  unlocked = true;
+  video.muted = false;
+
+  video.play()
+    .then(()=>overlay.classList.add("hidden"))
+    .catch(()=>{});
+}
+
+/* USER GESTURE */
+overlay.addEventListener("click", unlockPlayer);
+video.addEventListener("click", unlockPlayer);
 
 /* KEYBOARD */
 document.addEventListener("keydown",e=>{
@@ -220,4 +237,3 @@ if(last!==null)play(Number(last));
 </script>
 </body>
 </html>
-
