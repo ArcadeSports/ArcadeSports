@@ -6,66 +6,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    /* ===== CSS ARCADE ===== */
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
     body {
       margin: 0;
-      background: #000;
-      color: #0f0;
-      font-family: Arial, sans-serif;
+      /* Nuevo fondo y fuente */
+      background: radial-gradient(circle at center, #020202, #000);
+      color: #00ff66;
+      font-family: 'Press Start 2P', monospace; /* Fuente Arcade */
+      overflow: hidden; /* Evita scrollbars innecesarios en modo app */
     }
 
+    /* ===== CONTENEDOR PRINCIPAL ===== */
     #app {
       display: flex;
       height: 100vh;
+      /* Borde y glow arcade */
+      border: 4px solid #00ff66;
+      box-shadow: 0 0 20px #00ff66;
+      box-sizing: border-box; /* Para que el borde no rompa el 100vh */
     }
 
     /* ===== MENU ===== */
     #channelList {
       width: 260px;
-      background: #050505;
       overflow-y: auto;
-      border-right: 2px solid #0f0;
+      /* Estilo Arcade */
+      background: linear-gradient(180deg, #020202, #060606);
+      border-right: 2px solid #00ff66;
+      box-shadow: inset -4px 0 10px rgba(0,255,100,.3);
     }
+
+    /* Scrollbar arcade personalizada (opcional para chrome/webkit) */
+    #channelList::-webkit-scrollbar { width: 8px; }
+    #channelList::-webkit-scrollbar-thumb { background: #00ff66; }
+    #channelList::-webkit-scrollbar-track { background: #000; }
 
     .channel-item {
       padding: 12px;
       cursor: pointer;
-      border-bottom: 1px solid #0f0;
+      border-bottom: 1px solid #00441b; /* Borde sutil */
+      /* Tipografía Arcade */
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 4px #00ff66;
+      transition: all .15s ease;
     }
 
-    .channel-item:hover,
+    .channel-item:hover {
+      background: #00ff66;
+      color: #000;
+      text-shadow: none;
+      transform: scale(1.03);
+      padding-left: 20px; /* Pequeño desplazamiento visual */
+    }
+
     .channel-item.active {
-      background: #0f0;
+      background: #00ff66;
       color: #000;
       font-weight: bold;
+      box-shadow: inset 0 0 10px rgba(0,0,0,.6), 0 0 12px #00ff66;
     }
 
-    /* ===== PLAYER ===== */
+    /* ===== PLAYER AREA ===== */
     #playerArea {
       flex: 1;
       position: relative;
       background: #000;
+      /* Estilo Arcade */
+      border-left: 4px solid #00ff66;
+      box-shadow: inset 0 0 25px rgba(0,255,100,.25);
+      overflow: hidden;
     }
 
+    /* ===== PANTALLA BIENVENIDA ===== */
     #welcomeScreen {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 14px; /* Ajustado para fuente pixel */
       z-index: 2;
+      /* Efecto parpadeo */
+      text-shadow: 0 0 8px #00ff66;
+      animation: blink 1.5s infinite;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50% { opacity: .3; }
     }
 
     #videoPlayerContainer {
       width: 100%;
       height: 100%;
       display: none;
+      position: relative;
+      z-index: 1;
     }
 
+    /* ===== VIDEO ===== */
     video {
       width: 100%;
       height: 100%;
       background: black;
+      outline: none;
+      box-shadow: inset 0 0 40px rgba(0,0,0,.8);
+    }
+
+    /* ===== EFECTO GLITCH (CSS) ===== */
+    .glitch {
+      animation: glitch 0.4s linear;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); filter: hue-rotate(0deg); }
+      20% { transform: translate(-2px, 1px); }
+      40% { transform: translate(2px, -1px); }
+      60% { transform: translate(-1px, 2px); }
+      80% { transform: translate(1px, -2px); }
+      100% { transform: translate(0); filter: hue-rotate(360deg); }
+    }
+
+    /* ===== EFECTO CRT (SCANLINES) ===== */
+    #crt {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0,0,0,0) 0px,
+        rgba(0,0,0,0) 2px,
+        rgba(0,0,0,0.15) 3px
+      );
+      mix-blend-mode: overlay;
+      animation: crtFlicker 0.15s infinite;
+      z-index: 4;
+    }
+
+    @keyframes crtFlicker {
+      0% { opacity: 0.15; }
+      50% { opacity: 0.25; }
+      100% { opacity: 0.15; }
     }
 
     /* ===== OVERLAY ERROR ===== */
@@ -75,12 +161,14 @@
       inset: 0;
       background: rgba(0,0,0,.85);
       color: #0f0;
-      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 5;
       text-align: center;
+      /* Estilo Arcade */
+      font-size: 14px;
+      text-shadow: 0 0 10px #00ff66;
     }
   </style>
 </head>
@@ -88,7 +176,6 @@
 
 <div id="app">
 
-  <!-- ===== MENU ===== -->
   <div id="channelList">
     <div class="channel-item" onclick="playChannel('espn1', this)">ESPN</div>
     <div class="channel-item" onclick="playChannel('espn2', this)">ESPN 2</div>
@@ -106,11 +193,13 @@
     <div class="channel-item" onclick="playChannel('capodeportes', this)">Capo Deportes</div>
   </div>
 
-  <!-- ===== PLAYER ===== -->
   <div id="playerArea">
+    
+    <div id="crt"></div>
 
     <div id="welcomeScreen">
-      Selecciona un canal
+      INSERT COIN<br><br>
+      O SELECCIONA UN CANAL
     </div>
 
     <div id="videoPlayerContainer">
@@ -119,14 +208,18 @@
 
     <div id="playerOverlay">
       <div>
-        <p>STREAM CAÍDO</p>
-        <p>REINTENTANDO…</p>
+        <p>GAME OVER (STREAM CAÍDO)</p>
+        <p>CONTINUE? (REINTENTANDO…)</p>
       </div>
     </div>
 
   </div>
 
 </div>
+
+<audio id="beepSound" preload="auto">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav" type="audio/wav">
+</audio>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -149,16 +242,44 @@ const videoUrls = {
   capodeportes: ["https://d2.merichunidya.com:1686/hls/capodeportes.m3u8"]
 };
 
-/* ===== MOTOR HLS ===== */
+/* ===== VARIABLES GLOBALES & UTILIDADES ARCADE ===== */
 let hls = null;
 let currentChannel = null;
 let currentIndex = 0;
+let currentMenuIndex = 0; // Para navegación por teclado
 
 const video = document.getElementById("videoPlayer");
 const overlay = document.getElementById("playerOverlay");
 
+/* Función de sonido */
+function playBeep() {
+  const beep = document.getElementById("beepSound");
+  if (beep) {
+    beep.currentTime = 0;
+    beep.volume = 0.4;
+    beep.play().catch(()=>{});
+  }
+}
+
+/* Función Fullscreen */
+function toggleFullscreen() {
+  const el = document.documentElement;
+  if (!document.fullscreenElement) {
+    el.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+/* ===== MOTOR HLS ===== */
 function playHLS(url) {
   overlay.style.display = "none";
+  
+  // EFECTO GLITCH AL CARGAR
+  video.classList.remove("glitch");
+  void video.offsetWidth; // Trigger reflow
+  video.classList.add("glitch");
+  setTimeout(() => video.classList.remove("glitch"), 400);
 
   if (hls) {
     hls.destroy();
@@ -190,6 +311,8 @@ function retryStream() {
 
 /* ===== PLAY CHANNEL ===== */
 function playChannel(channelId, el) {
+  playBeep(); // Sonido al click
+
   currentChannel = channelId;
   currentIndex = 0;
 
@@ -198,17 +321,66 @@ function playChannel(channelId, el) {
   document.getElementById("welcomeScreen").style.display = "none";
   document.getElementById("videoPlayerContainer").style.display = "block";
 
-  document.querySelectorAll(".channel-item").forEach(c => c.classList.remove("active"));
+  const allItems = document.querySelectorAll(".channel-item");
+  allItems.forEach(c => c.classList.remove("active"));
   el.classList.add("active");
+
+  // Sincronizar índice del teclado con el click
+  currentMenuIndex = Array.from(allItems).indexOf(el);
 
   playHLS(videoUrls[channelId][0]);
 }
+
+/* ===== CONTROL POR TECLADO ===== */
+const menuItems = () => [...document.querySelectorAll(".channel-item")];
+
+function highlightMenu(items) {
+  // Nota: Solo movemos el foco visual si se desea, 
+  // pero mantendremos la clase .active solo en el canal reproduciendo 
+  // hasta que se presione ENTER.
+  // Para feedback visual inmediato al mover flechas:
+  items.forEach(i => i.style.background = ""); // Limpiar estilos inline previos
+  items[currentMenuIndex].scrollIntoView({ block: "nearest" });
+  
+  // Efecto hover simulado
+  items.forEach(i => i.classList.remove("active")); // Quitamos active visualmente
+  items[currentMenuIndex].classList.add("active"); // Ponemos active temporal
+}
+
+document.addEventListener("keydown", e => {
+  const items = menuItems();
+  if (!items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault(); // Evitar scroll de página
+    currentMenuIndex = (currentMenuIndex + 1) % items.length;
+    highlightMenu(items);
+    playBeep();
+  }
+
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    currentMenuIndex = (currentMenuIndex - 1 + items.length) % items.length;
+    highlightMenu(items);
+    playBeep();
+  }
+
+  if (e.key === "Enter") {
+    // Simula el click en el elemento seleccionado
+    items[currentMenuIndex].click();
+  }
+
+  if (e.key.toLowerCase() === "f") {
+    toggleFullscreen();
+  }
+});
 
 /* ===== AUTO LOAD ===== */
 window.addEventListener("load", () => {
   const last = localStorage.getItem("lastChannel");
   if (last && videoUrls[last]) {
-    playChannel(last, document.querySelector(`[onclick*="${last}"]`));
+    const el = document.querySelector(`[onclick*="${last}"]`);
+    if (el) playChannel(last, el);
   }
 });
 </script>
