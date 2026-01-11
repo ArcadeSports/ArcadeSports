@@ -3,55 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <title>Arcade Sports</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
   <style>
-    /* ===== CSS ARCADE ===== */
+    /* ===== CSS ARCADE & FUENTES ===== */
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
     body {
       margin: 0;
-      /* Nuevo fondo y fuente */
       background: radial-gradient(circle at center, #020202, #000);
       color: #00ff66;
-      font-family: 'Press Start 2P', monospace; /* Fuente Arcade */
-      overflow: hidden; /* Evita scrollbars innecesarios en modo app */
+      font-family: 'Press Start 2P', monospace;
+      overflow: hidden;
+      height: 100vh;
     }
 
-    /* ===== CONTENEDOR PRINCIPAL ===== */
+    /* ===== CONTENEDOR PRINCIPAL (RESPONSIVE) ===== */
     #app {
       display: flex;
       height: 100vh;
-      /* Borde y glow arcade */
       border: 4px solid #00ff66;
       box-shadow: 0 0 20px #00ff66;
-      box-sizing: border-box; /* Para que el borde no rompa el 100vh */
+      box-sizing: border-box;
+      flex-direction: row; /* Horizontal en PC */
     }
 
-    /* ===== MENU ===== */
+    /* ===== MENU LATERAL / INFERIOR ===== */
     #channelList {
       width: 260px;
-      overflow-y: auto;
-      /* Estilo Arcade */
       background: linear-gradient(180deg, #020202, #060606);
       border-right: 2px solid #00ff66;
       box-shadow: inset -4px 0 10px rgba(0,255,100,.3);
+      overflow-y: auto;
+      flex-shrink: 0;
+      -webkit-overflow-scrolling: touch;
     }
-
-    /* Scrollbar arcade personalizada (opcional para chrome/webkit) */
-    #channelList::-webkit-scrollbar { width: 8px; }
-    #channelList::-webkit-scrollbar-thumb { background: #00ff66; }
-    #channelList::-webkit-scrollbar-track { background: #000; }
 
     .channel-item {
       padding: 12px;
       cursor: pointer;
-      border-bottom: 1px solid #00441b; /* Borde sutil */
-      /* Tipografía Arcade */
+      border-bottom: 1px solid #00441b;
       font-size: 11px;
       letter-spacing: 1px;
       text-shadow: 0 0 4px #00ff66;
       transition: all .15s ease;
+      touch-action: manipulation;
+      user-select: none;
     }
 
     .channel-item:hover {
@@ -59,46 +56,24 @@
       color: #000;
       text-shadow: none;
       transform: scale(1.03);
-      padding-left: 20px; /* Pequeño desplazamiento visual */
     }
 
     .channel-item.active {
       background: #00ff66;
       color: #000;
-      font-weight: bold;
       box-shadow: inset 0 0 10px rgba(0,0,0,.6), 0 0 12px #00ff66;
     }
 
-    /* ===== PLAYER AREA ===== */
+    /* ===== ÁREA DEL REPRODUCTOR ===== */
     #playerArea {
       flex: 1;
       position: relative;
       background: #000;
-      /* Estilo Arcade */
       border-left: 4px solid #00ff66;
       box-shadow: inset 0 0 25px rgba(0,255,100,.25);
       overflow: hidden;
-    }
-
-    /* ===== PANTALLA BIENVENIDA ===== */
-    #welcomeScreen {
-      position: absolute;
-      inset: 0;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px; /* Ajustado para fuente pixel */
-      z-index: 2;
-      /* Efecto parpadeo */
-      text-shadow: 0 0 8px #00ff66;
-      animation: blink 1.5s infinite;
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    @keyframes blink {
-      0%,100% { opacity: 1; }
-      50% { opacity: .3; }
+      flex-direction: column;
     }
 
     #videoPlayerContainer {
@@ -109,30 +84,14 @@
       z-index: 1;
     }
 
-    /* ===== VIDEO ===== */
     video {
       width: 100%;
       height: 100%;
       background: black;
       outline: none;
-      box-shadow: inset 0 0 40px rgba(0,0,0,.8);
     }
 
-    /* ===== EFECTO GLITCH (CSS) ===== */
-    .glitch {
-      animation: glitch 0.4s linear;
-    }
-
-    @keyframes glitch {
-      0% { transform: translate(0); filter: hue-rotate(0deg); }
-      20% { transform: translate(-2px, 1px); }
-      40% { transform: translate(2px, -1px); }
-      60% { transform: translate(-1px, 2px); }
-      80% { transform: translate(1px, -2px); }
-      100% { transform: translate(0); filter: hue-rotate(360deg); }
-    }
-
-    /* ===== EFECTO CRT (SCANLINES) ===== */
+    /* ===== EFECTOS VISUALES ===== */
     #crt {
       pointer-events: none;
       position: absolute;
@@ -141,7 +100,7 @@
         to bottom,
         rgba(0,0,0,0) 0px,
         rgba(0,0,0,0) 2px,
-        rgba(0,0,0,0.15) 3px
+        rgba(0,0,0,0.1) 3px
       );
       mix-blend-mode: overlay;
       animation: crtFlicker 0.15s infinite;
@@ -149,26 +108,72 @@
     }
 
     @keyframes crtFlicker {
-      0% { opacity: 0.15; }
-      50% { opacity: 0.25; }
-      100% { opacity: 0.15; }
+      0% { opacity: 0.1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 0.1; }
     }
 
-    /* ===== OVERLAY ERROR ===== */
+    .glitch { animation: glitch 0.4s linear; }
+    @keyframes glitch {
+      0% { transform: translate(0); filter: hue-rotate(0deg); }
+      20% { transform: translate(-3px, 2px); }
+      40% { transform: translate(3px, -2px); }
+      100% { transform: translate(0); filter: hue-rotate(360deg); }
+    }
+
+    #welcomeScreen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      z-index: 2;
+      text-shadow: 0 0 8px #00ff66;
+      animation: blink 1.5s infinite;
+      text-align: center;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50% { opacity: .3; }
+    }
+
     #playerOverlay {
       display: none;
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,.85);
-      color: #0f0;
-      display: flex;
+      z-index: 5;
       align-items: center;
       justify-content: center;
-      z-index: 5;
       text-align: center;
-      /* Estilo Arcade */
-      font-size: 14px;
-      text-shadow: 0 0 10px #00ff66;
+      font-size: 12px;
+    }
+
+    /* ===== ADAPTACIÓN PARA CELULARES ===== */
+    @media (max-width: 768px) {
+      #app { flex-direction: column; }
+      
+      #playerArea {
+        height: 40%; /* Video arriba */
+        flex: none;
+        border-left: none;
+        border-bottom: 4px solid #00ff66;
+      }
+
+      #channelList {
+        width: 100%;
+        height: 60%; /* Lista abajo */
+        border-right: none;
+      }
+
+      .channel-item {
+        padding: 18px 15px; /* Más fácil de tocar */
+        font-size: 12px;
+      }
+
+      #welcomeScreen { font-size: 10px; }
     }
   </style>
 </head>
@@ -194,12 +199,10 @@
   </div>
 
   <div id="playerArea">
-    
     <div id="crt"></div>
 
     <div id="welcomeScreen">
-      INSERT COIN<br><br>
-      O SELECCIONA UN CANAL
+      INSERT COIN<br><br>SELECCIONA CANAL
     </div>
 
     <div id="videoPlayerContainer">
@@ -208,11 +211,9 @@
 
     <div id="playerOverlay">
       <div>
-        <p>GAME OVER (STREAM CAÍDO)</p>
-        <p>CONTINUE? (REINTENTANDO…)</p>
+        <p>REINTENTANDO...</p>
       </div>
     </div>
-
   </div>
 
 </div>
@@ -224,7 +225,7 @@
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script>
-/* ===== CANALES ===== */
+/* ===== CONFIGURACIÓN ===== */
 const videoUrls = {
   espn1: ["https://florcd1.crackstreamslivehd.com/espn/index.m3u8?token=df487b0bcbfe9a1a3b3b2e6ef1fc6165be80b741-67-1768193218-1768139218&ip=190.106.222.109"],
   espn2: ["https://99a1.crackstreamslivehd.com/espn2/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=0a1cbf7739df157db7b127c2c7fc497a59eae943-b8-1768193842-1768139842"],
@@ -242,49 +243,25 @@ const videoUrls = {
   capodeportes: ["https://d2.merichunidya.com:1686/hls/capodeportes.m3u8"]
 };
 
-/* ===== VARIABLES GLOBALES & UTILIDADES ARCADE ===== */
 let hls = null;
 let currentChannel = null;
 let currentIndex = 0;
-let currentMenuIndex = 0; // Para navegación por teclado
+let currentMenuIndex = 0;
 
 const video = document.getElementById("videoPlayer");
 const overlay = document.getElementById("playerOverlay");
 
-/* Función de sonido */
 function playBeep() {
   const beep = document.getElementById("beepSound");
-  if (beep) {
-    beep.currentTime = 0;
-    beep.volume = 0.4;
-    beep.play().catch(()=>{});
-  }
+  if (beep) { beep.currentTime = 0; beep.volume = 0.3; beep.play().catch(()=>{}); }
 }
 
-/* Función Fullscreen */
-function toggleFullscreen() {
-  const el = document.documentElement;
-  if (!document.fullscreenElement) {
-    el.requestFullscreen().catch(()=>{});
-  } else {
-    document.exitFullscreen();
-  }
-}
-
-/* ===== MOTOR HLS ===== */
 function playHLS(url) {
   overlay.style.display = "none";
-  
-  // EFECTO GLITCH AL CARGAR
-  video.classList.remove("glitch");
-  void video.offsetWidth; // Trigger reflow
   video.classList.add("glitch");
   setTimeout(() => video.classList.remove("glitch"), 400);
 
-  if (hls) {
-    hls.destroy();
-    hls = null;
-  }
+  if (hls) { hls.destroy(); hls = null; }
 
   if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = url;
@@ -295,11 +272,8 @@ function playHLS(url) {
   hls = new Hls({ lowLatencyMode: true });
   hls.loadSource(url);
   hls.attachMedia(video);
-
   hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-  hls.on(Hls.Events.ERROR, (e, data) => {
-    if (data.fatal) retryStream();
-  });
+  hls.on(Hls.Events.ERROR, (e, data) => { if (data.fatal) retryStream(); });
 }
 
 function retryStream() {
@@ -309,73 +283,50 @@ function retryStream() {
   setTimeout(() => playHLS(list[currentIndex]), 3000);
 }
 
-/* ===== PLAY CHANNEL ===== */
 function playChannel(channelId, el) {
-  playBeep(); // Sonido al click
-
+  playBeep();
   currentChannel = channelId;
   currentIndex = 0;
-
   localStorage.setItem("lastChannel", channelId);
 
   document.getElementById("welcomeScreen").style.display = "none";
   document.getElementById("videoPlayerContainer").style.display = "block";
 
-  const allItems = document.querySelectorAll(".channel-item");
-  allItems.forEach(c => c.classList.remove("active"));
+  const items = document.querySelectorAll(".channel-item");
+  items.forEach(c => c.classList.remove("active"));
   el.classList.add("active");
-
-  // Sincronizar índice del teclado con el click
-  currentMenuIndex = Array.from(allItems).indexOf(el);
+  currentMenuIndex = Array.from(items).indexOf(el);
 
   playHLS(videoUrls[channelId][0]);
 }
 
-/* ===== CONTROL POR TECLADO ===== */
-const menuItems = () => [...document.querySelectorAll(".channel-item")];
-
-function highlightMenu(items) {
-  // Nota: Solo movemos el foco visual si se desea, 
-  // pero mantendremos la clase .active solo en el canal reproduciendo 
-  // hasta que se presione ENTER.
-  // Para feedback visual inmediato al mover flechas:
-  items.forEach(i => i.style.background = ""); // Limpiar estilos inline previos
-  items[currentMenuIndex].scrollIntoView({ block: "nearest" });
-  
-  // Efecto hover simulado
-  items.forEach(i => i.classList.remove("active")); // Quitamos active visualmente
-  items[currentMenuIndex].classList.add("active"); // Ponemos active temporal
-}
-
+/* TECLADO */
 document.addEventListener("keydown", e => {
-  const items = menuItems();
+  const items = document.querySelectorAll(".channel-item");
   if (!items.length) return;
 
   if (e.key === "ArrowDown") {
-    e.preventDefault(); // Evitar scroll de página
+    e.preventDefault();
     currentMenuIndex = (currentMenuIndex + 1) % items.length;
-    highlightMenu(items);
+    items[currentMenuIndex].scrollIntoView({ block: "nearest" });
+    items.forEach(i => i.classList.remove("active"));
+    items[currentMenuIndex].classList.add("active");
     playBeep();
-  }
-
-  if (e.key === "ArrowUp") {
+  } else if (e.key === "ArrowUp") {
     e.preventDefault();
     currentMenuIndex = (currentMenuIndex - 1 + items.length) % items.length;
-    highlightMenu(items);
+    items[currentMenuIndex].scrollIntoView({ block: "nearest" });
+    items.forEach(i => i.classList.remove("active"));
+    items[currentMenuIndex].classList.add("active");
     playBeep();
-  }
-
-  if (e.key === "Enter") {
-    // Simula el click en el elemento seleccionado
+  } else if (e.key === "Enter") {
     items[currentMenuIndex].click();
-  }
-
-  if (e.key.toLowerCase() === "f") {
-    toggleFullscreen();
+  } else if (e.key === "f") {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
   }
 });
 
-/* ===== AUTO LOAD ===== */
 window.addEventListener("load", () => {
   const last = localStorage.getItem("lastChannel");
   if (last && videoUrls[last]) {
