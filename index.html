@@ -1,765 +1,217 @@
-<!DOCTYPE htmL>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Sports Network</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #000;
-            color: #fff;
-            overflow: hidden;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23052' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E"),
-                linear-gradient(to bottom, #000, #111);
-        }
-        
-        /* Efecto CRT */
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
-        
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            position: relative;
-        }
-        
-        .header {
-            padding: 10px 0;
-            text-align: center;
-            color: #0f0;
-            text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
-            background: linear-gradient(to right, #000, #030, #000);
-            position: relative;
-            z-index: 10;
-            border-bottom: 4px solid #0f0;
-        }
+  <meta charset="UTF-8" />
+  <title>Arcade Sports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        /* Botón hamburger (visible en móvil) */
-        .hamburger {
-            display: none;
-            position: absolute;
-            left: 10px;
-            top: 12px;
-            z-index: 20;
-            background: transparent;
-            border: 2px solid #0f0;
-            color: #0f0;
-            padding: 8px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Press Start 2P', cursive;
-        }
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: #0f0;
+      font-family: Arial, sans-serif;
+    }
 
-        /* Cuando el menú está abierto, evitar scroll de fondo */
-        body.no-scroll {
-            overflow: hidden;
-        }
-        
-        .header h1 {
-            font-size: 2rem;
-            animation: textFlicker 2s infinite;
-            margin: 0;
-            letter-spacing: 2px;
-        }
-        
-        .main-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        .categories {
-            width: 300px;
-            background: rgba(0, 20, 0, 0.9);
-            border-right: 2px solid #0f0;
-            overflow-y: auto;
-            padding: 10px;
-            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
-        }
-        
-        .category {
-            margin-bottom: 20px;
-        }
-        
-        .category-title {
-            font-size: 1.2rem;
-            color: #0f0;
-            text-shadow: 0 0 5px #0f0;
-            border-bottom: 2px solid #0f0;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .channel-list {
-            list-style-type: none;
-        }
-        
-        .channel-item {
-            padding: 10px;
-            margin: 5px 0;
-            background: rgba(0, 20, 0, 0.6);
-            border: 2px solid #060;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .channel-item:hover {
-            background: rgba(0, 40, 0, 0.8);
-            border-color: #0f0;
-            transform: scale(1.03);
-            box-shadow: 0 0 10px #0f0;
-        }
-        
-        .channel-item::before {
-            content: "►";
-            color: #0f0;
-            margin-right: 8px;
-        }
-        
-        .channel-item.active {
-            background: rgba(0, 60, 0, 0.8);
-            border-color: #0f0;
-            box-shadow: 0 0 15px #0f0;
-        }
-        
-        .player-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .welcome-screen {
-            text-align: center;
-            padding: 20px;
-            z-index: 1;
-        }
-        
-        .welcome-title {
-            font-size: 1.8rem;
-            color: #0f0;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-        
-        .welcome-message {
-            font-size: 1rem;
-            color: #0f0;
-            line-height: 1.6;
-            max-width: 600px;
-        }
-        
-        /* Contenedor del iFrame */
-        #iframePlayerContainer {
-            width: 100%;
-            height: 100%;
-            display: none;
-            z-index: 1;
-        }
+    #app {
+      display: flex;
+      height: 100vh;
+    }
 
-        #iframePlayerContainer {
-    width: 100%;
-    /* Mantiene la proporción de TV para no deformar la imagen */
-    aspect-ratio: 16 / 9;
-    max-height: 100%;
-    display: none;
-    z-index: 1;
-    /* Centra el reproductor vertical y horizontalmente */
-    margin: auto;
-	}
+    /* ===== MENU ===== */
+    #channelList {
+      width: 260px;
+      background: #050505;
+      overflow-y: auto;
+      border-right: 2px solid #0f0;
+    }
 
-        #channelStreamFrame {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-                
-        .arcade-cabinet {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        .arcade-cabinet::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 30px;
-            background: linear-gradient(to bottom, #000, transparent);
-        }
-        
-        .arcade-cabinet::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 30px;
-            background: linear-gradient(to top, #000, transparent);
-        }
-        
-        .side-panel {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 30px;
-            background: linear-gradient(to right, #000, transparent);
-        }
-        
-        .side-panel.left {
-            left: 0;
-        }
-        
-        .side-panel.right {
-            right: 0;
-            background: linear-gradient(to left, #000, transparent);
-        }
-        
-        .scanline {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: rgba(0, 255, 0, 0.1);
-            z-index: 11;
-            animation: scanline 6s linear infinite;
-            pointer-events: none;
-        }
-        
-        /* Botón de donación PayPal */
-        .donation-section {
-            padding: 15px;
-            background: rgba(0, 10, 0, 0.9);
-            border-top: 2px solid #0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            z-index: 10;
-        }
-        
-        .paypal-btn {
-            background: #ffc439;
-            border: none;
-            border-radius: 25px;
-            padding: 12px 24px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            color: #003087;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        .paypal-btn:hover {
-            background: #ffb80a;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
-        
-        .paypal-btn:active {
-            transform: translateY(0);
-        }
-        
-        .paypal-logo {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .paypal-text {
-            font-size: 14px;
-        }
-        
-        .main-menu-btn {
-            background: #020;
-            border: 2px solid #0f0;
-            color: #0f0;
-            font-family: 'Press Start 2P', cursive;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-            text-shadow: 0 0 5px #0f0;
-        }
-        
-        .main-menu-btn:hover {
-            background: #040;
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
-        }
-        
-        .main-menu-btn:active {
-            transform: translateY(1px);
-        }
-        
-        .channel-number {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 20, 0, 0.7);
-            border: 2px solid #0f0;
-            padding: 5px 10px;
-            font-size: 1.2rem;
-            color: #0f0;
-            text-shadow: 0 0 5px #0f0;
-            z-index: 11;
-            display: none;
-        }
-        
-        .channel-number.active {
-            display: block;
-            animation: fadeOut 2s forwards;
-        }
-        
-        /* Animaciones */
-        @keyframes textFlicker {
-            0% { opacity: 1; } 3% { opacity: 0.8; } 6% { opacity: 1; } 7% { opacity: 0.8; }
-            8% { opacity: 1; } 9% { opacity: 0.8; } 10% { opacity: 1; } 100% { opacity: 1; }
-        }
-        
-        @keyframes pulse {
-            0% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
-            50% { text-shadow: 0 0 15px #0f0, 0 0 30px #0f0, 0 0 40px #0f0; }
-            100% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
-        }
-        
-        @keyframes scanline {
-            0% { top: -5%; } 100% { top: 105%; }
-        }
-        
-        @keyframes fadeOut {
-            0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; }
-        }
-        
-        /* Diseño responsivo */
-        @media (max-width: 768px) {
-            body {
-                font-size: 10px;
-            }
-            
-            .hamburger {
-                display: flex;
-            }
-            
-            .main-content { 
-                flex-direction: column; 
-            }
-            
-            .categories {
-                position: fixed;
-                left: -100%;
-                top: 0;
-                width: 80%;
-                max-width: 300px;
-                height: 100vh;
-                max-height: 100vh;
-                border-right: 2px solid #0f0;
-                border-bottom: none;
-                padding: 60px 8px 8px 8px;
-                z-index: 99;
-                transition: left 0.3s ease;
-                overflow-y: auto;
-            }
-            
-            .categories.active {
-                left: 0;
-            }
-            
-            .category {
-                margin-bottom: 15px;
-            }
-            
-            .category-title {
-                font-size: 0.7rem;
-                padding-bottom: 8px;
-                margin-bottom: 8px;
-            }
-            
-            .channel-item { 
-                padding: 12px 8px; 
-                font-size: 0.6rem;
-                margin: 8px 0;
-                line-height: 1.4;
-            }
-            
-            .channel-item::before {
-                font-size: 0.7rem;
-                margin-right: 6px;
-            }
-            
-            .header {
-                padding: 15px 10px;
-            }
-            
-            .header h1 { 
-                font-size: 0.9rem;
-                letter-spacing: 1px;
-                line-height: 1.3;
-            }
-            
-            .player-container {
-                min-height: 50vh;
-            }
-            
-            .welcome-title { 
-                font-size: 0.9rem;
-                line-height: 1.5;
-                margin-bottom: 15px;
-            }
-            
-            .welcome-message { 
-                font-size: 0.65rem;
-                line-height: 1.6;
-                padding: 0 10px;
-            }
-            
-            .donation-section { 
-                padding: 12px 10px; 
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .paypal-btn { 
-                padding: 10px 20px;
-                font-size: 11px;
-                width: 100%;
-                max-width: 250px;
-                justify-content: center;
-            }
-            
-            .main-menu-btn { 
-                padding: 10px 15px; 
-                font-size: 0.6rem;
-                width: 100%;
-                max-width: 250px;
-            }
-            
-            .channel-number {
-                top: 10px;
-                right: 10px;
-                font-size: 0.8rem;
-                padding: 5px 8px;
-            }
-            
-            .scanline {
-                height: 2px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header h1 { 
-                font-size: 0.7rem;
-            }
-            
-            .category-title {
-                font-size: 0.6rem;
-            }
-            
-            .channel-item { 
-                font-size: 0.55rem;
-                padding: 10px 6px;
-            }
-            
-            .welcome-title { 
-                font-size: 0.75rem;
-            }
-            
-            .welcome-message { 
-                font-size: 0.55rem;
-            }
-            
-            .main-menu-btn { 
-                font-size: 0.55rem;
-                padding: 8px 12px;
-            }
-       
-        
-    </style>
+    .channel-item {
+      padding: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #0f0;
+    }
+
+    .channel-item:hover,
+    .channel-item.active {
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+    }
+
+    /* ===== PLAYER ===== */
+    #playerArea {
+      flex: 1;
+      position: relative;
+      background: #000;
+    }
+
+    #welcomeScreen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      z-index: 2;
+    }
+
+    #videoPlayerContainer {
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      background: black;
+    }
+
+    /* ===== OVERLAY ERROR ===== */
+    #playerOverlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.85);
+      color: #0f0;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-                <button class="hamburger" id="menuToggle" aria-label="Abrir menú de canales" aria-expanded="false">☰</button>
-                <h1>ARCADE SPORTS NETWORK</h1>
-            </div>
-        
-        <div class="main-content">
-            <div class="categories">
-                <div class="category">
-                    <div class="category-title">ESPN CHANNEL</div>
-                    <ul class="channel-list">
-						<li class="channel-item" onclick="playChannel('espn', 'ESPN', 001, this)">ESPN </li>
-						<li class="channel-item" onclick="playChannel('espn2', 'ESPN 2', 1, this)">ESPN 2 </li>
-                        <li class="channel-item" onclick="playChannel('espn3', 'ESPN 3', 6, this)">ESPN 3 </li>
-                        <li class="channel-item" onclick="playChannel('espn4', 'ESPN 4', 4, this)">ESPN 4 </li>
-						<li class="channel-item" onclick="playChannel('espn5', 'ESPN 5', 5, this)">ESPN 5 </li>
-						<li class="channel-item" onclick="playChannel('espn6', 'ESPN 6', 6, this)">ESPN 6 </li>
-						<li class="channel-item" onclick="playChannel('espn7', 'ESPN 7', 7, this)">ESPN 7 </li>
-                    </ul>
-                </div>
-                
-                <div class="category">
-                    <div class="category-title">WIN CHANNEL</div>
-                    <ul class="channel-list">
-                        <li class="channel-item" onclick="playChannel('WIN SPORT', 'WIN SPORT TV', 2, this)">WIN SPORT</li>
-						<li class="channel-item" onclick="playChannel('WIN SPORT+', 'WIN SPORT +', 78, this)">WIN SPORT +</li>
-                    </ul>
-                </div>
-                
-                <div class="category">
-                    <div class="category-title">Fútbol</div>
-                    <ul class="channel-list">
-                        <li class="channel-item" onclick="playChannel('directsports', 'DIRECTSPORTS', 11, this)">DIRECTSPORTS </li>
-                        <li class="channel-item" onclick="playChannel('foxsports', 'FOX SPORTS MX', 10, this)">FOX SPORTS MX </li>
-						<li class="channel-item" onclick="playChannel('tycsports', 'tycsports', 44, this)">TYCSPORTS </li>
-						<li class="channel-item" onclick="playChannel('espnmx', 'espnmx', 43, this)">ESPN MX </li>
-						<li class="channel-item" onclick="playChannel('laligahypermotion', 'laligahypermotion', 39, this)">LA LIGA HYPERMOTION </li>
-                        <li class="channel-item" onclick="playChannel('capodeportes', 'capodeportes', 63, this)">CAPO DEPORTES </li>
-                    </div>
-            </div>
-            
-            <div class="player-container">
-                <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-title">BIENVENIDO AL ARCADE SPORTS NETWORK</div>
-                    <div class="welcome-message">
-					 Selecciona un canal del menú para empezar a ver tu contenido deportivo favorito.
-                    </div>
-					
-					
-					
-                </div>
-                
-                <div id="iframePlayerContainer">
-                    <iframe id="channelStreamFrame"
-							allow="autoplay; encrypted-media; picture-in-picture" 
-							allowfullscreen>
-					</iframe>
-                </div>
-                
-                <div class="arcade-cabinet">
-                    <div class="side-panel left"></div>
-                    <div class="side-panel right"></div>
-                </div>
-                
-                <div class="channel-number" id="channelNumber"></div>
-                <div class="scanline"></div>
-            </div>
-        </div>
-        
-        <div class="donation-section">
-            <button class="main-menu-btn" onclick="showWelcomeScreen()">MAIN MENU</button>
-            <a href="https://paypal.me/saul78789?country.x=GT&locale.x=es_XC" target="_blank" class="paypal-btn">
-                <span class="paypal-text">Donar con</span>
-                <span class="paypal-logo">Pay<span style="color: #009cde;">Pal</span></span>
-            </a>
-        </div>
+
+<div id="app">
+
+  <!-- ===== MENU ===== -->
+  <div id="channelList">
+    <div class="channel-item" onclick="playChannel('espn1', this)">ESPN</div>
+    <div class="channel-item" onclick="playChannel('espn2', this)">ESPN 2</div>
+    <div class="channel-item" onclick="playChannel('espn3', this)">ESPN 3</div>
+    <div class="channel-item" onclick="playChannel('espn4', this)">ESPN 4</div>
+    <div class="channel-item" onclick="playChannel('espn5', this)">ESPN 5</div>
+    <div class="channel-item" onclick="playChannel('espn6', this)">ESPN 6</div>
+    <div class="channel-item" onclick="playChannel('espn7', this)">ESPN 7</div>
+    <div class="channel-item" onclick="playChannel('espnmx', this)">ESPN MX</div>
+    <div class="channel-item" onclick="playChannel('winsports', this)">WinSports</div>
+    <div class="channel-item" onclick="playChannel('winsports+', this)">WinSports+</div>
+    <div class="channel-item" onclick="playChannel('directsports', this)">DirecTV Sports</div>
+    <div class="channel-item" onclick="playChannel('tycsports', this)">TyC Sports</div>
+    <div class="channel-item" onclick="playChannel('laligahypermotion', this)">LaLiga HyperMotion</div>
+    <div class="channel-item" onclick="playChannel('capodeportes', this)">Capo Deportes</div>
+  </div>
+
+  <!-- ===== PLAYER ===== -->
+  <div id="playerArea">
+
+    <div id="welcomeScreen">
+      Selecciona un canal
     </div>
-    
+
+    <div id="videoPlayerContainer">
+      <video id="videoPlayer" controls autoplay playsinline muted></video>
+    </div>
+
+    <div id="playerOverlay">
+      <div>
+        <p>STREAM CAÍDO</p>
+        <p>REINTENTANDO…</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 <script>
-    const videoUrls = {
-        // Cada entrada puede ser una string (URL única) o un objeto con variantes por calidad
-        'espn': 'https://streamtpcloud.com/global1.php?stream=espn',
-		'espn1': 'https://streamtpcloud.com/global1.php?stream=espn',
-		'espn2': 'https://streamtpcloud.com/global1.php?stream=espn2',
-		'espn3': 'https://streamtpcloud.com/global1.php?stream=espn3',
-		'espn4': 'https://streamtpcloud.com/global1.php?stream=espn4',
-		'espn5': 'https://streamtpcloud.com/global1.php?stream=espn5',
-		'espn6': 'https://streamtpcloud.com/global1.php?stream=espn6',
-		'espn7': 'https://streamtpcloud.com/global1.php?stream=espn7',
-		'espnmx': 'https://streamtpcloud.com/global1.php?stream=espn2mx',
-		'winsports': 'https://streamtpcloud.com/global1.php?stream=winsports',
-		'winsports+': 'https://streamtpcloud.com/global1.php?stream=winplus',
-		'directsports': 'https://streamtpcloud.com/global1.php?stream=dsports',
-		'tycsports': 'https://streamtpcloud.com/global1.php?stream=tycinternacional',
-		'laligahypermotion': 'https://streamtpcloud.com/global1.php?stream=laligahypermotion',
-		'capodeportes': 'https://www.capoplay.net/capodeportes.php',
-    };
+/* ===== CANALES ===== */
+const videoUrls = {
+  espn1: ["https://florcd1.crackstreamslivehd.com/espn/index.m3u8?token=df487b0bcbfe9a1a3b3b2e6ef1fc6165be80b741-67-1768193218-1768139218&ip=190.106.222.109"],
+  espn2: ["https://99a1.crackstreamslivehd.com/espn2/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=0a1cbf7739df157db7b127c2c7fc497a59eae943-b8-1768193842-1768139842"],
+  espn3: ["https://24a1.crackstreamslivehd.com/espn3/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=9a1a64ad1595b43092bba0bc7b28a9df1a41a49f-17-1768194011-1768140011"],
+  espn4: ["https://99a1.crackstreamslivehd.com/espn4/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=af2f530fa7f3ad16605136f05de72319fc128e0a-8b-1768194045-1768140045"],
+  espn5: ["https://pecdl1.crackstreamslivehd.com/espn5/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=b134f7a217fe4423b5660cbf01df2fc2df37aeb9-5d-1768195237-1768141237"],
+  espn6: ["https://51a1.crackstreamslivehd.com/espn6/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=4700a29c1a00370ee6a472ecb53f30d302c747a4-37-1768195241-1768141241"],
+  espn7: ["https://57b1.crackstreamslivehd.com/espn7/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=e5e425a5ce24423947d8de95f571a22fa126ce7b-af-1768195313-1768141313"],
+  espnmx: ["https://57b1.crackstreamslivehd.com/espnmx/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=e41e4e1840c35eba059dcabaac2486187ee2ffb7-63-1768195362-1768141362"],
+  winsports: ["https://98ca2.crackstreamslivehd.com/winsports/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=a89eee5a680479bff43622c51b9ba1e6c82ce108-d8-1768195445-1768141445"],
+  "winsports+": ["https://pecdl1.crackstreamslivehd.com/winplus/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=2da35cb5a31bdb6e176990643553a316fc99d7a2-77-1768195483-1768141483"],
+  directsports: ["https://14c51.crackstreamslivehd.com/dsports/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=580485af03a01450a005af126bb9cc620f1db971-f7-1768195518-1768141518"],
+  tycsports: ["https://24a1.crackstreamslivehd.com/tycinternacional/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=384880a4bf97fac9028883afb9aba83d9c7a12c7-f0-1768195611-1768141611"],
+  laligahypermotion: ["https://florcd1.crackstreamslivehd.com/laligahypermotion/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=ea2eba7d908a52563f2bb0d12654be5c8c98233a-16-1768195644-1768141644"],
+  capodeportes: ["https://d2.merichunidya.com:1686/hls/capodeportes.m3u8"]
+};
 
-    /**
-     * Detectar la calidad de la conexión del usuario.
-     * Retorna 'high' | 'medium' | 'low'. Usa Network Information API cuando esté disponible.
-     */
-    function detectNetworkQuality() {
-        try {
-            const nav = navigator;
-            // Network Information API (no soportada por todos los navegadores)
-            if (nav.connection) {
-                const conn = nav.connection;
-                // effectiveType: 'slow-2g', '2g', '3g', or '4g'
-                const type = conn.effectiveType || '';
-                const downlink = conn.downlink || 0; // Mbps estimado
+/* ===== MOTOR HLS ===== */
+let hls = null;
+let currentChannel = null;
+let currentIndex = 0;
 
-                if (type.includes('4g') || downlink >= 5) return 'high';
-                if (type.includes('3g') || downlink >= 1.5) return 'medium';
-                return 'low';
-            }
-        } catch (e) {
-            console.warn('Network information not available', e);
-        }
+const video = document.getElementById("videoPlayer");
+const overlay = document.getElementById("playerOverlay");
 
-        // Fallback conservador: asumir medium
-        return 'medium';
-    }
+function playHLS(url) {
+  overlay.style.display = "none";
 
-    /**
-     * Elige la mejor URL disponible para el canal según la calidad detectada.
-     * videoUrls admite tanto strings como objetos con claves 'low','medium','high','default'.
-     */
-    function chooseStreamUrl(channelId) {
-        const src = videoUrls[channelId];
-        if (!src) return null;
+  if (hls) {
+    hls.destroy();
+    hls = null;
+  }
 
-        // Si la entrada es string, devolverla directamente
-        if (typeof src === 'string') return src;
+  if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = url;
+    video.play();
+    return;
+  }
 
-        // Si es objeto, buscar según la calidad detectada
-        const quality = detectNetworkQuality();
-        if (src[quality]) return src[quality];
-        if (src['medium']) return src['medium'];
-        if (src['default']) return src['default'];
-        // ultima opción: tomar cualquier valor del objeto
-        const keys = Object.keys(src);
-        return keys.length ? src[keys[0]] : null;
-    }
+  hls = new Hls({ lowLatencyMode: true });
+  hls.loadSource(url);
+  hls.attachMedia(video);
 
-    // Elementos del DOM
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const iframePlayerContainer = document.getElementById('iframePlayerContainer');
-    const channelStreamFrame = document.getElementById('channelStreamFrame');
-    const channelNumberElement = document.getElementById('channelNumber');
+  hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+  hls.on(Hls.Events.ERROR, (e, data) => {
+    if (data.fatal) retryStream();
+  });
+}
 
-    // Al cargar la página
-    window.onload = function() {
-        if(iframePlayerContainer) iframePlayerContainer.classList.remove('active');
-        if(welcomeScreen) welcomeScreen.style.display = 'block';
-    };
+function retryStream() {
+  overlay.style.display = "flex";
+  const list = videoUrls[currentChannel];
+  currentIndex = (currentIndex + 1) % list.length;
+  setTimeout(() => playHLS(list[currentIndex]), 3000);
+}
 
-    // Función para reproducir un canal
-    function playChannel(channelId, channelName, channelNumber, clickedElement) {
-        if(welcomeScreen) welcomeScreen.style.display = 'none';
+/* ===== PLAY CHANNEL ===== */
+function playChannel(channelId, el) {
+  currentChannel = channelId;
+  currentIndex = 0;
 
-        if(iframePlayerContainer) {
-            iframePlayerContainer.classList.add('active');
-        }
+  localStorage.setItem("lastChannel", channelId);
 
-        if(channelStreamFrame) {
-            const chosen = chooseStreamUrl(channelId);
-            if (chosen) {
-                channelStreamFrame.src = chosen;
-                console.log(`playChannel: selected stream for ${channelId} -> ${chosen}`);
-            } else {
-                console.error('No URL found for channel', channelId);
-                showWelcomeScreen();
-                return;
-            }
-        } else {
-            console.error("No se encontró channelStreamFrame o la URL de video para " + channelId);
-            showWelcomeScreen();
-            return; 
-        }
+  document.getElementById("welcomeScreen").style.display = "none";
+  document.getElementById("videoPlayerContainer").style.display = "block";
 
-        // Actualizar elementos activos en la lista de canales
-        const channelItems = document.querySelectorAll('.channel-item');
-        channelItems.forEach(item => {
-            item.classList.remove('active');
-        });
+  document.querySelectorAll(".channel-item").forEach(c => c.classList.remove("active"));
+  el.classList.add("active");
 
-        if (clickedElement) {
-             clickedElement.classList.add('active');
-        }
+  playHLS(videoUrls[channelId][0]);
+}
 
-        // Mostrar número de canal
-        if(channelNumberElement) {
-            channelNumberElement.textContent = `CH-${channelNumber}`;
-            channelNumberElement.classList.remove('active');
-            void channelNumberElement.offsetWidth;
-            channelNumberElement.classList.add('active');
-        }
-    }
-
-    // Función para mostrar la pantalla de bienvenida
-    function showWelcomeScreen() {
-        if(channelStreamFrame) {
-            channelStreamFrame.src = 'about:blank';
-        }
-        if(iframePlayerContainer) {
-            iframePlayerContainer.classList.remove('active');
-        }
-
-        if(welcomeScreen) welcomeScreen.style.display = 'block';
-
-        // Desmarcar cualquier canal activo
-        const channelItems = document.querySelectorAll('.channel-item');
-        channelItems.forEach(item => {
-            item.classList.remove('active');
-        });
-    }
-
-    // Toggle del menú móvil (hamburger)
-    document.addEventListener('DOMContentLoaded', function() {
-        const menuToggle = document.getElementById('menuToggle');
-        const categories = document.querySelector('.categories');
-        if (menuToggle && categories) {
-            menuToggle.addEventListener('click', function() {
-                const active = categories.classList.toggle('active');
-                document.body.classList.toggle('no-scroll', active);
-                menuToggle.setAttribute('aria-expanded', active);
-            });
-
-            // Al seleccionar un canal, cerrar el menú en móvil para mejor UX
-            document.querySelectorAll('.channel-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    if (categories.classList.contains('active')) {
-                        categories.classList.remove('active');
-                        document.body.classList.remove('no-scroll');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            });
-        }
-    });
+/* ===== AUTO LOAD ===== */
+window.addEventListener("load", () => {
+  const last = localStorage.getItem("lastChannel");
+  if (last && videoUrls[last]) {
+    playChannel(last, document.querySelector(`[onclick*="${last}"]`));
+  }
+});
 </script>
+
 </body>
-
 </html>
-
