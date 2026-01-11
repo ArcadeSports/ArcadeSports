@@ -132,7 +132,7 @@ video{
 <audio id="beep" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav"></audio>
 
 <script>
-const channels={
+const channels = {
   "ESPN 1":"https://florcd1.crackstreamslivehd.com/espn/index.m3u8",
   "ESPN 2":"https://99a1.crackstreamslivehd.com/espn2/tracks-v1a1/mono.m3u8",
   "ESPN 3":"https://24a1.crackstreamslivehd.com/espn3/tracks-v1a1/mono.m3u8",
@@ -141,35 +141,33 @@ const channels={
   "ESPN 6":"https://51a1.crackstreamslivehd.com/espn6/tracks-v1a1/mono.m3u8",
   "ESPN 7":"https://57b1.crackstreamslivehd.com/espn7/tracks-v1a1/mono.m3u8",
   "WinSports":"https://98ca2.crackstreamslivehd.com/winsports/tracks-v1a1/mono.m3u8",
-  "WinSports Plus":"https://pecdl1.crackstreamslivehd.com/winplus/tracks-v1a1/mono.m3u8",
+   "WinSports Plus":"https://98ca2.crackstreamslivehd.com/winplus/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=8630ad3ac0753ff5ced6cab3623b6958e95dfb1a-b3-1768202388-1768148388",
   "TyC Sports":"https://24a1.crackstreamslivehd.com/tycinternacional/tracks-v1a1/mono.m3u8",
   "Capo Deportes":"https://d2.merichunidya.com:1686/hls/capodeportes.m3u8"
 };
 
-const menu=document.getElementById("menu");
-const video=document.getElementById("video");
-const overlay=document.getElementById("overlay");
-const beep=document.getElementById("beep");
-const burger=document.getElementById("hamburger");
+const menu = document.getElementById("menu");
+const video = document.getElementById("video");
+const overlay = document.getElementById("overlay");
+const burger = document.getElementById("hamburger");
 
-let hls;
-let index=0;
-const keys=Object.keys(channels);
+let unlocked = false;
+let hls = null;
+let index = 0;
 
-/* MENU BUILD */
+const keys = Object.keys(channels);
+
+/* BUILD MENU */
 keys.forEach((name,i)=>{
-  const d=document.createElement("div");
-  d.className="channel";
-  d.textContent=name;
-  d.onclick=()=>play(i);
+  const d = document.createElement("div");
+  d.className = "channel";
+  d.textContent = name;
+  d.onclick = () => play(i);
   menu.appendChild(d);
 });
 
-/* TOGGLE MENU */
-function toggleMenu(){
-  menu.classList.toggle("open");
-}
-burger.onclick=toggleMenu;
+/* MENU TOGGLE */
+burger.onclick = () => menu.classList.toggle("open");
 
 /* PLAY */
 function play(i){
@@ -185,55 +183,50 @@ function play(i){
     : "TOCA PARA REPRODUCIR";
   overlay.classList.remove("hidden");
 
-  if(hls){
+  if (hls) {
     hls.destroy();
     hls = null;
   }
 
-  if(Hls.isSupported()){
+  if (Hls.isSupported()) {
     hls = new Hls();
+
     hls.loadSource(channels[keys[i]]);
     hls.attachMedia(video);
+
+    hls.on(Hls.Events.ERROR, (event, data) => {
+      if (data.fatal) {
+        overlay.textContent = "CANAL NO DISPONIBLE";
+        overlay.classList.remove("hidden");
+      }
+    });
+
   } else {
     video.src = channels[keys[i]];
   }
 
   localStorage.setItem("lastChannel", i);
 }
-hls.on(Hls.Events.ERROR, (event, data) => {
-  if (data.fatal) {
-    overlay.textContent = "CANAL NO DISPONIBLE";
-    overlay.classList.remove("hidden");
-  }
-});
 
-/* UNLOCK */
+/* UNLOCK (MÓVIL) */
 function unlockPlayer(){
-  if(unlocked) return;
-
+  if (unlocked) return;
   unlocked = true;
-  video.muted = false;
 
+  video.muted = false;
   video.play()
     .then(()=>overlay.classList.add("hidden"))
     .catch(()=>{});
 }
 
-/* USER GESTURE */
 overlay.addEventListener("click", unlockPlayer);
 video.addEventListener("click", unlockPlayer);
 
-/* KEYBOARD */
-document.addEventListener("keydown",e=>{
-  if(e.key==="h")toggleMenu();
-  if(e.key==="ArrowDown")play((index+1)%keys.length);
-  if(e.key==="ArrowUp")play((index-1+keys.length)%keys.length);
-  if(e.key==="Enter")video.requestFullscreen();
-});
-
 /* RESTORE */
-const last=localStorage.getItem("lastChannel");
-if(last!==null)play(Number(last));
+const last = localStorage.getItem("lastChannel");
+if (last !== null) play(Number(last));
 </script>
+
+
 </body>
 </html>
