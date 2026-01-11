@@ -47,8 +47,9 @@ video{
   justify-content:center;
   text-shadow:0 0 10px #00ff66;
   font-size:14px;
-  pointer-events:none;
+  cursor:pointer;
 }
+
 .hidden{display:none}
 
 /* SCANLINES */
@@ -122,7 +123,7 @@ video{
   <div id="menu"></div>
 
   <div id="playerArea">
-    <video id="video" autoplay muted playsinline></video>
+    <video id="video" muted playsinline></video>
     <div id="overlay">PULSA ☰ PARA CANALES</div>
     <div id="scanlines"></div>
   </div>
@@ -194,12 +195,15 @@ function play(i){
     hls.loadSource(channels[keys[i]]);
     hls.attachMedia(video);
 
-    hls.on(Hls.Events.ERROR, (event, data) => {
-      if (data.fatal) {
-        overlay.textContent = "CANAL NO DISPONIBLE";
-        overlay.classList.remove("hidden");
-      }
-    });
+    if (hls) {
+  hls.on(Hls.Events.ERROR, (event, data) => {
+    if (data.fatal) {
+      overlay.textContent = "CANAL NO DISPONIBLE";
+      overlay.classList.remove("hidden");
+    }
+  });
+}
+
 
   } else {
     video.src = channels[keys[i]];
