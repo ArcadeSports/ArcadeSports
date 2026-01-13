@@ -1,181 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ArcadeSports – Test</title>
+<meta charset="UTF-8" />
+<title>ArcadeSports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link rel="icon" href="data:,">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<!-- Favicon (opcional) -->
+<link rel="icon" href="favicon.ico">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif}
-body{background:#000;color:#0f0;height:100vh;overflow:hidden}
-#app{display:flex;height:100%}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-/* MENU */
-#menu{
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:260px;
-  background:#020;
-  border-right:2px solid #0f0;
-  transform:translateX(-100%);
-  transition:.3s;
-  z-index:10;
-  overflow-y:auto;
+body {
+  background: #0b0b0b;
+  color: #fff;
+  height: 100vh;
+  overflow: hidden;
 }
-#menu.open{transform:translateX(0)}
-.channel{
-  padding:12px;
-  border-bottom:1px solid #0f0;
-  cursor:pointer;
+
+/* HEADER */
+header {
+  height: 55px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  border-bottom: 2px solid #00ffc6;
 }
-.channel:hover{background:#040}
-.channel.active{background:#060}
+
+header h1 {
+  font-size: 18px;
+  color: #00ffc6;
+}
+
+.menu-btn {
+  margin-left: auto;
+  font-size: 26px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* LAYOUT */
+.container {
+  display: flex;
+  height: calc(100vh - 55px);
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #111;
+  border-right: 2px solid #00ffc6;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.sidebar.hidden {
+  transform: translateX(-100%);
+}
+
+.channel {
+  padding: 14px;
+  border-bottom: 1px solid #222;
+  cursor: pointer;
+}
+
+.channel:hover {
+  background: #00ffc6;
+  color: #000;
+}
 
 /* PLAYER */
-#player{flex:1;position:relative}
-video{width:100%;height:100%;background:#000}
-
-/* OVERLAY */
-#overlay{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.7);
-  cursor:pointer;
+.player {
+  flex: 1;
+  background: #000;
+  position: relative;
 }
-#overlay.hidden{display:none}
 
-/* BURGER */
-#burger{
-  position:absolute;
-  top:10px;
-  left:10px;
-  z-index:20;
-  font-size:22px;
-  cursor:pointer;
+.player iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    height: 100%;
+    z-index: 10;
+  }
 }
 </style>
 </head>
 
 <body>
-<div id="app">
 
-  <div id="menu"></div>
+<header>
+  <h1>ArcadeSports</h1>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+</header>
 
-  <div id="player">
-    <div id="burger">☰</div>
-    <video id="video" muted playsinline></video>
-    <div id="overlay">TOCA PARA REPRODUCIR</div>
+<div class="container">
+  <div class="sidebar hidden" id="sidebar">
+    <div class="channel" onclick="play('espn')">ESPN</div>
+    <div class="channel" onclick="play('espn2')">ESPN 2</div>
+    <div class="channel" onclick="play('espn3')">ESPN 3</div>
+    <div class="channel" onclick="play('espn4')">ESPN 4</div>
+    <div class="channel" onclick="play('espn5')">ESPN 5</div>
+    <div class="channel" onclick="play('espn6')">ESPN 6</div>
+    <div class="channel" onclick="play('espn7')">ESPN 7</div>
+    <div class="channel" onclick="play('espnmx')">ESPN MX</div>
+    <div class="channel" onclick="play('winsports')">WinSports</div>
+    <div class="channel" onclick="play('winplus')">WinSports +</div>
+    <div class="channel" onclick="play('dsports')">DirectSports</div>
+    <div class="channel" onclick="play('tyc')">TyC Sports</div>
+    <div class="channel" onclick="play('laliga')">LaLiga HyperMotion</div>
   </div>
 
+  <div class="player">
+    <iframe id="player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </div>
 </div>
 
 <script>
-/* =====================
-   CANALES (TEST)
-===================== */
-const channels = {
-  "ESPN":"https://streamtpcloud.com/global2.php?stream=espn",
-  "ESPN 1":"https://streamtpcloud.com/global2.php?stream=espn",
-  "ESPN 2":"https://streamtpcloud.com/global2.php?stream=espn2",
-  "ESPN 3":"https://streamtpcloud.com/global2.php?stream=espn3",
-  "ESPN 4":"https://streamtpcloud.com/global2.php?stream=espn4",
-  "ESPN 5":"https://streamtpcloud.com/global2.php?stream=espn5",
-  "ESPN 6":"https://streamtpcloud.com/global2.php?stream=espn6",
-  "ESPN 7":"https://streamtpcloud.com/global2.php?stream=espn7",
-  "ESPN MX":"https://streamtpcloud.com/global2.php?stream=espn2mx",
-  "WinSports":"https://streamtpcloud.com/global2.php?stream=winsports",
-  "WinSports Plus":"https://streamtpcloud.com/global2.php?stream=winplus",
-  "DirecTV Sports":"https://streamtpcloud.com/global2.php?stream=dsports",
-  "TyC Sports":"https://streamtpcloud.com/global2.php?stream=tycinternacional",
-  "LaLiga Hypermotion":"https://streamtpcloud.com/global2.php?stream=laligahypermotion"
+const streams = {
+  espn: "https://streamtpcloud.com/global2.php?stream=espn",
+  espn2: "https://streamtpcloud.com/global2.php?stream=espn2",
+  espn3: "https://streamtpcloud.com/global2.php?stream=espn3",
+  espn4: "https://streamtpcloud.com/global2.php?stream=espn4",
+  espn5: "https://streamtpcloud.com/global2.php?stream=espn5",
+  espn6: "https://streamtpcloud.com/global2.php?stream=espn6",
+  espn7: "https://streamtpcloud.com/global2.php?stream=espn7",
+  espnmx: "https://streamtpcloud.com/global2.php?stream=espn2mx",
+  winsports: "https://streamtpcloud.com/global2.php?stream=winsports",
+  winplus: "https://streamtpcloud.com/global2.php?stream=winplus",
+  dsports: "https://streamtpcloud.com/global2.php?stream=dsports",
+  tyc: "https://streamtpcloud.com/global2.php?stream=tycinternacional",
+  laliga: "https://streamtpcloud.com/global2.php?stream=laligahypermotion"
 };
 
-const menu = document.getElementById("menu");
-const video = document.getElementById("video");
-const overlay = document.getElementById("overlay");
-const burger = document.getElementById("burger");
-
-let hls = null;
-let unlocked = false;
-let current = 0;
-
-const keys = Object.keys(channels);
-
-/* =====================
-   BUILD MENU
-===================== */
-keys.forEach((name,i)=>{
-  const d = document.createElement("div");
-  d.className = "channel";
-  d.textContent = name;
-  d.onclick = ()=>play(i);
-  menu.appendChild(d);
-});
-
-/* =====================
-   MENU TOGGLE
-===================== */
-burger.onclick = ()=>menu.classList.toggle("open");
-
-/* =====================
-   PLAY
-===================== */
-function play(i){
-  current = i;
-  menu.classList.remove("open");
-
-  document.querySelectorAll(".channel").forEach(c=>c.classList.remove("active"));
-  document.querySelectorAll(".channel")[i].classList.add("active");
-
-  overlay.textContent = "TOCA PARA REPRODUCIR";
-  overlay.classList.remove("hidden");
-
-  if(hls){
-    hls.destroy();
-    hls = null;
-  }
-
-  const url = channels[keys[i]];
-
-  if(Hls.isSupported()){
-    hls = new Hls();
-    hls.loadSource(url);
-    hls.attachMedia(video);
-  }else{
-    video.src = url;
-  }
-
-  localStorage.setItem("lastChannel", i);
+function play(channel) {
+  document.getElementById("player").src = streams[channel];
+  document.getElementById("sidebar").classList.add("hidden");
 }
 
-/* =====================
-   UNLOCK
-===================== */
-function unlock(){
-  if(unlocked) return;
-  unlocked = true;
-
-  video.play()
-    .then(()=>overlay.classList.add("hidden"))
-    .catch(()=>{});
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("hidden");
 }
-
-overlay.onclick = unlock;
-video.onclick = unlock;
-
-/* =====================
-   START
-===================== */
-const last = localStorage.getItem("lastChannel");
-play(last ? Number(last) : 0);
 </script>
+
 </body>
 </html>
