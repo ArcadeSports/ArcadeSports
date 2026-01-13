@@ -2,41 +2,43 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Arcade Sports</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcadeSports – Test</title>
 
+<link rel="icon" href="data:,">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:#000;
-  font-family:'Press Start 2P',monospace;
-  color:#00ff66;
-  overflow:hidden;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif}
+body{background:#000;color:#0f0;height:100vh;overflow:hidden}
+#app{display:flex;height:100%}
 
-/* APP */
-#app{
-  height:100vh;
-  position:relative;
-  border:4px solid #00ff66;
-  box-shadow:0 0 25px #00ff66;
+/* MENU */
+#menu{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:260px;
+  background:#020;
+  border-right:2px solid #0f0;
+  transform:translateX(-100%);
+  transition:.3s;
+  z-index:10;
+  overflow-y:auto;
 }
+#menu.open{transform:translateX(0)}
+.channel{
+  padding:12px;
+  border-bottom:1px solid #0f0;
+  cursor:pointer;
+}
+.channel:hover{background:#040}
+.channel.active{background:#060}
 
 /* PLAYER */
-#playerArea{
-  width:100%;
-  height:100%;
-  position:relative;
-}
-video{
-  width:100%;
-  height:100%;
-  background:#000;
-}
+#player{flex:1;position:relative}
+video{width:100%;height:100%;background:#000}
 
 /* OVERLAY */
 #overlay{
@@ -45,72 +47,19 @@ video{
   display:flex;
   align-items:center;
   justify-content:center;
-  text-shadow:0 0 10px #00ff66;
-  font-size:14px;
+  background:rgba(0,0,0,.7);
   cursor:pointer;
 }
+#overlay.hidden{display:none}
 
-.hidden{display:none}
-
-/* SCANLINES */
-#scanlines{
-  pointer-events:none;
+/* BURGER */
+#burger{
   position:absolute;
-  inset:0;
-  background:linear-gradient(
-    rgba(0,0,0,0) 50%,
-    rgba(0,0,0,.25) 50%
-  );
-  background-size:100% 4px;
-  opacity:.3;
-}
-
-/* HAMBURGER */
-#hamburger{
-  position:absolute;
-  top:12px;
-  left:12px;
-  z-index:10;
-  font-size:18px;
+  top:10px;
+  left:10px;
+  z-index:20;
+  font-size:22px;
   cursor:pointer;
-  background:#000;
-  border:2px solid #00ff66;
-  padding:8px 12px;
-  box-shadow:0 0 10px #00ff66;
-}
-
-/* MENU */
-#menu{
-  position:absolute;
-  inset:0;
-  background:#000;
-  transform:translateX(-100%);
-  transition:.25s;
-  z-index:9;
-  overflow-y:auto;
-}
-#menu.open{transform:translateX(0)}
-
-.channel{
-  padding:18px;
-  border-bottom:1px solid #003319;
-  cursor:pointer;
-}
-.channel:hover,
-.channel.active{
-  background:#00ff66;
-  color:#000;
-}
-
-/* GLITCH */
-.glitch{
-  animation:glitch .2s linear 2;
-}
-@keyframes glitch{
-  0%{transform:translate(0)}
-  25%{transform:translate(3px,-2px)}
-  50%{transform:translate(-3px,2px)}
-  75%{transform:translate(2px,1px)}
 }
 </style>
 </head>
@@ -118,119 +67,115 @@ video{
 <body>
 <div id="app">
 
-  <div id="hamburger">☰</div>
-
   <div id="menu"></div>
 
-  <div id="playerArea">
+  <div id="player">
+    <div id="burger">☰</div>
     <video id="video" muted playsinline></video>
-    <div id="overlay">PULSA ☰ PARA CANALES</div>
-    <div id="scanlines"></div>
+    <div id="overlay">TOCA PARA REPRODUCIR</div>
   </div>
 
 </div>
 
-<audio id="beep" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav"></audio>
-
 <script>
+/* =====================
+   CANALES (TEST)
+===================== */
 const channels = {
-  "ESPN 1":"https://florcd1.crackstreamslivehd.com/espn/index.m3u8",
-  "ESPN 2":"https://99a1.crackstreamslivehd.com/espn2/tracks-v1a1/mono.m3u8",
-  "ESPN 3":"https://24a1.crackstreamslivehd.com/espn3/tracks-v1a1/mono.m3u8",
-  "ESPN 4":"https://99a1.crackstreamslivehd.com/espn4/tracks-v1a1/mono.m3u8",
-  "ESPN 5":"https://pecdl1.crackstreamslivehd.com/espn5/tracks-v1a1/mono.m3u8",
-  "ESPN 6":"https://51a1.crackstreamslivehd.com/espn6/tracks-v1a1/mono.m3u8",
-  "ESPN 7":"https://57b1.crackstreamslivehd.com/espn7/tracks-v1a1/mono.m3u8",
-  "WinSports":"https://98ca2.crackstreamslivehd.com/winsports/tracks-v1a1/mono.m3u8",
-   "WinSports Plus":"https://98ca2.crackstreamslivehd.com/winplus/tracks-v1a1/mono.m3u8?ip=190.106.222.109&token=8630ad3ac0753ff5ced6cab3623b6958e95dfb1a-b3-1768202388-1768148388",
-  "TyC Sports":"https://24a1.crackstreamslivehd.com/tycinternacional/tracks-v1a1/mono.m3u8",
-  "Capo Deportes":"https://d2.merichunidya.com:1686/hls/capodeportes.m3u8"
+  "ESPN":"https://streamtpcloud.com/global2.php?stream=espn",
+  "ESPN 1":"https://streamtpcloud.com/global2.php?stream=espn",
+  "ESPN 2":"https://streamtpcloud.com/global2.php?stream=espn2",
+  "ESPN 3":"https://streamtpcloud.com/global2.php?stream=espn3",
+  "ESPN 4":"https://streamtpcloud.com/global2.php?stream=espn4",
+  "ESPN 5":"https://streamtpcloud.com/global2.php?stream=espn5",
+  "ESPN 6":"https://streamtpcloud.com/global2.php?stream=espn6",
+  "ESPN 7":"https://streamtpcloud.com/global2.php?stream=espn7",
+  "ESPN MX":"https://streamtpcloud.com/global2.php?stream=espn2mx",
+  "WinSports":"https://streamtpcloud.com/global2.php?stream=winsports",
+  "WinSports Plus":"https://streamtpcloud.com/global2.php?stream=winplus",
+  "DirecTV Sports":"https://streamtpcloud.com/global2.php?stream=dsports",
+  "TyC Sports":"https://streamtpcloud.com/global2.php?stream=tycinternacional",
+  "LaLiga Hypermotion":"https://streamtpcloud.com/global2.php?stream=laligahypermotion"
 };
 
 const menu = document.getElementById("menu");
 const video = document.getElementById("video");
 const overlay = document.getElementById("overlay");
-const burger = document.getElementById("hamburger");
+const burger = document.getElementById("burger");
 
-let unlocked = false;
 let hls = null;
-let index = 0;
+let unlocked = false;
+let current = 0;
 
 const keys = Object.keys(channels);
 
-/* BUILD MENU */
+/* =====================
+   BUILD MENU
+===================== */
 keys.forEach((name,i)=>{
   const d = document.createElement("div");
   d.className = "channel";
   d.textContent = name;
-  d.onclick = () => play(i);
+  d.onclick = ()=>play(i);
   menu.appendChild(d);
 });
 
-/* MENU TOGGLE */
-burger.onclick = () => menu.classList.toggle("open");
+/* =====================
+   MENU TOGGLE
+===================== */
+burger.onclick = ()=>menu.classList.toggle("open");
 
-/* PLAY */
+/* =====================
+   PLAY
+===================== */
 function play(i){
-  index = i;
+  current = i;
+  menu.classList.remove("open");
 
   document.querySelectorAll(".channel").forEach(c=>c.classList.remove("active"));
   document.querySelectorAll(".channel")[i].classList.add("active");
 
-  menu.classList.remove("open");
-
-  overlay.textContent = unlocked
-    ? "CARGANDO..."
-    : "TOCA PARA REPRODUCIR";
+  overlay.textContent = "TOCA PARA REPRODUCIR";
   overlay.classList.remove("hidden");
 
-  if (hls) {
+  if(hls){
     hls.destroy();
     hls = null;
   }
 
-  if (Hls.isSupported()) {
+  const url = channels[keys[i]];
+
+  if(Hls.isSupported()){
     hls = new Hls();
-
-    hls.loadSource(channels[keys[i]]);
+    hls.loadSource(url);
     hls.attachMedia(video);
-
-    if (hls) {
-  hls.on(Hls.Events.ERROR, (event, data) => {
-    if (data.fatal) {
-      overlay.textContent = "CANAL NO DISPONIBLE";
-      overlay.classList.remove("hidden");
-    }
-  });
-}
-
-
-  } else {
-    video.src = channels[keys[i]];
+  }else{
+    video.src = url;
   }
 
   localStorage.setItem("lastChannel", i);
 }
 
-/* UNLOCK (MÓVIL) */
-function unlockPlayer(){
-  if (unlocked) return;
+/* =====================
+   UNLOCK
+===================== */
+function unlock(){
+  if(unlocked) return;
   unlocked = true;
 
-  video.muted = false;
   video.play()
     .then(()=>overlay.classList.add("hidden"))
     .catch(()=>{});
 }
 
-overlay.addEventListener("click", unlockPlayer);
-video.addEventListener("click", unlockPlayer);
+overlay.onclick = unlock;
+video.onclick = unlock;
 
-/* RESTORE */
+/* =====================
+   START
+===================== */
 const last = localStorage.getItem("lastChannel");
-if (last !== null) play(Number(last));
+play(last ? Number(last) : 0);
 </script>
-
-
 </body>
 </html>
