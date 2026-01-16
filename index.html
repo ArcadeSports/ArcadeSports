@@ -3,243 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Sports Network - Live</title>
+    <title>Arcade Sports Network</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Press Start 2P', cursive;
             background-color: #000;
             color: #fff;
             overflow: hidden;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23052' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E"),
-                linear-gradient(to bottom, #000, #111);
+            background-image: linear-gradient(to bottom, #000, #111);
         }
         
-        /* Efecto CRT Scanlines */
+        /* Efecto CRT Scanlines (Optimizado para no bloquear el video) */
         body::before {
             content: " ";
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 20;
-            background-size: 100% 2px, 3px 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            z-index: 100;
+            background-size: 100% 3px;
             pointer-events: none;
+            opacity: 0.3;
         }
         
-        .container {
+        .container { display: flex; flex-direction: column; height: 100vh; }
+        
+        header {
+            height: 60px;
+            background: #111;
             display: flex;
-            flex-direction: column;
-            height: 100vh;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 3px solid #00ffc6;
+            z-index: 110;
         }
         
-        .header {
-            padding: 15px 0;
-            text-align: center;
-            color: #0f0;
-            background: linear-gradient(to right, #000, #030, #000);
-            border-bottom: 4px solid #0f0;
-            position: relative;
-            z-index: 10;
-        }
-        
-        .header h1 {
-            font-size: 1.5rem;
-            animation: textFlicker 2s infinite;
-            letter-spacing: 2px;
+        header h1 {
+            font-size: 16px;
+            color: #00ffc6;
+            text-shadow: 0 0 10px #00ffc6;
+            animation: flicker 2s infinite;
         }
 
-        .main-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
+        .main-content { display: flex; flex: 1; overflow: hidden; position: relative; }
         
-        /* SIDEBAR / CATEGORIES */
+        /* SIDEBAR ESTILO ARCADE */
         .sidebar {
-            width: 320px;
-            background: rgba(0, 20, 0, 0.9);
-            border-right: 2px solid #0f0;
+            width: 280px;
+            background: rgba(10, 10, 10, 0.95);
+            border-right: 2px solid #00ffc6;
             overflow-y: auto;
-            padding: 15px;
-            z-index: 10;
+            transition: transform 0.3s steps(4);
+            z-index: 120;
         }
 
-        .category-title {
-            font-size: 0.9rem;
-            color: #0f0;
-            text-shadow: 0 0 5px #0f0;
-            border-bottom: 2px solid #0f0;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        
+        .sidebar.hidden { transform: translateX(-100%); }
+
         .channel-item {
-            padding: 12px;
-            margin: 8px 0;
-            background: rgba(0, 40, 0, 0.4);
-            border: 2px solid #060;
-            font-size: 0.7rem;
+            padding: 15px;
+            border-bottom: 1px solid #222;
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-size: 10px;
+            color: #00ffc6;
             display: flex;
             align-items: center;
         }
         
-        .channel-item:hover, .channel-item.active {
-            background: #0f0;
+        .channel-item::before { content: "► "; margin-right: 10px; }
+
+        .channel-item:hover {
+            background: #00ffc6;
             color: #000;
-            border-color: #fff;
-            box-shadow: 0 0 15px #0f0;
-            transform: scale(1.02);
         }
 
-        .channel-item::before {
-            content: "►";
-            margin-right: 10px;
-        }
-        
-        /* PLAYER AREA */
-        .player-container {
+        /* ÁREA DEL REPRODUCTOR */
+        .player-area {
             flex: 1;
             background: #000;
             position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
+        /* CONFIGURACIÓN EXACTA DEL IFRAME DE TU ARCHIVO FUNCIONAL */
         #player {
             width: 100%;
             height: 100%;
             border: none;
-            display: none; /* Se activa al elegir canal */
+            display: block;
         }
 
-        .welcome-screen {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .welcome-title {
-            font-size: 1.2rem;
-            color: #0f0;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        .insert-coin {
-            font-size: 1rem;
-            color: #ff0;
-            animation: blinkText 1s infinite;
-        }
-
-        /* CONTROLS FOOTER */
-        .controls {
-            padding: 15px;
-            background: #000;
-            border-top: 4px solid #0f0;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            z-index: 30;
-        }
-        
-        .control-btn {
-            background: #020;
-            border: 2px solid #0f0;
-            color: #0f0;
-            font-family: 'Press Start 2P', cursive;
-            padding: 10px 20px;
+        .menu-btn {
+            margin-left: auto;
+            color: #00ffc6;
+            font-size: 24px;
             cursor: pointer;
-            font-size: 0.7rem;
-        }
-        
-        .control-btn:hover {
-            background: #0f0;
-            color: #000;
         }
 
-        /* ANIMACIONES */
-        @keyframes textFlicker {
-            0% { opacity: 1; } 3% { opacity: 0.8; } 10% { opacity: 1; } 100% { opacity: 1; }
+        .overlay-msg {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
         }
-        @keyframes blinkText {
-            0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; }
-        }
-        @keyframes pulse {
-            0%, 100% { text-shadow: 0 0 10px #0f0; }
-            50% { text-shadow: 0 0 25px #0f0, 0 0 40px #0f0; }
-        }
+
+        .blink { animation: blinker 1s linear infinite; color: #ff0; font-size: 14px; }
+        @keyframes blinker { 50% { opacity: 0; } }
+        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
         /* Scrollbar Retro */
         .sidebar::-webkit-scrollbar { width: 8px; }
-        .sidebar::-webkit-scrollbar-track { background: #000; }
-        .sidebar::-webkit-scrollbar-thumb { background: #060; border: 1px solid #0f0; }
-
-        @media (max-width: 768px) {
-            .sidebar { width: 100%; position: absolute; height: 100%; display: none; }
-            .sidebar.show { display: block; }
-        }
+        .sidebar::-webkit-scrollbar-thumb { background: #00ffc6; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header">
-            <h1>ARCADE SPORTS NETWORK</h1>
-        </div>
+        <header>
+            <h1>ARCADE SPORTS</h1>
+            <div class="menu-btn" onclick="toggleMenu()">☰</div>
+        </header>
         
         <div class="main-content">
             <div class="sidebar" id="sidebar">
-                <div class="category-title">SELECT CHANNEL</div>
-                <div class="channel-item" onclick="play('espn', this)">ESPN</div>
-                <div class="channel-item" onclick="play('espn2', this)">ESPN 2</div>
-                <div class="channel-item" onclick="play('espn3', this)">ESPN 3</div>
-                <div class="channel-item" onclick="play('espn4', this)">ESPN 4</div>
-                <div class="channel-item" onclick="play('espn5', this)">ESPN 5</div>
-                <div class="channel-item" onclick="play('espn6', this)">ESPN 6</div>
-                <div class="channel-item" onclick="play('espn7', this)">ESPN 7</div>
-                <div class="channel-item" onclick="play('espnmx', this)">ESPN MX</div>
-                <div class="channel-item" onclick="play('winsports', this)">WIN SPORTS</div>
-                <div class="channel-item" onclick="play('winplus', this)">WIN SPORTS +</div>
-                <div class="channel-item" onclick="play('dsports', this)">DIRECT SPORTS</div>
-                <div class="channel-item" onclick="play('tyc', this)">TYC SPORTS</div>
-                <div class="channel-item" onclick="play('laliga', this)">LALIGA HYPERMOTION</div>
-				<div class="channel-item" onclick="play('nba', this)">NBA</div>
+                <div class="channel-item" onclick="play('espn')">ESPN</div>
+                <div class="channel-item" onclick="play('espn2')">ESPN 2</div>
+                <div class="channel-item" onclick="play('espn3')">ESPN 3</div>
+                <div class="channel-item" onclick="play('espn4')">ESPN 4</div>
+                <div class="channel-item" onclick="play('espn5')">ESPN 5</div>
+                <div class="channel-item" onclick="play('espn6')">ESPN 6</div>
+                <div class="channel-item" onclick="play('espn7')">ESPN 7</div>
+                <div class="channel-item" onclick="play('espnmx')">ESPN MX</div>
+                <div class="channel-item" onclick="play('winsports')">WinSports</div>
+                <div class="channel-item" onclick="play('winplus')">WinSports +</div>
+                <div class="channel-item" onclick="play('dsports')">DirectSports</div>
+                <div class="channel-item" onclick="play('tyc')">TyC Sports</div>
+                <div class="channel-item" onclick="play('laliga')">LaLiga HyperMotion</div>
+                <div class="channel-item" onclick="play('nba')">NBA</div>
             </div>
             
-            <div class="player-container">
-                <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-title">PLAYER 1 READY</div>
-                    <div class="insert-coin">INSERT COIN / SELECT CHANNEL</div>
+            <div class="player-area">
+                <div id="welcome" class="overlay-msg">
+                    <p class="blink">INSERT COIN<br>SELECT CHANNEL</p>
                 </div>
-                
-                <iframe id="player" 
-                        sandbox="allow-scripts allow-same-origin allow-presentation"
-                        allow="autoplay; fullscreen; encrypted-media" 
-                        referrerpolicy="no-referrer">
+                <iframe 
+                    id="player" 
+                    sandbox="allow-scripts allow-same-origin allow-presentation"
+                    allow="autoplay; fullscreen; encrypted-media"
+                    referrerpolicy="no-referrer">
                 </iframe>
             </div>
-        </div>
-        
-        <div class="controls">
-            <button class="control-btn" onclick="toggleMenu()">CHANNELS</button>
-            <button class="control-btn" onclick="location.reload()">RESET</button>
-            <button class="control-btn" onclick="toggleFullscreen()">FULLSCREEN</button>
         </div>
     </div>
     
     <script>
-    // URLs del archivo "Renovado"
     const streams = {
         espn: "https://streamtpcloud.com/global2.php?stream=espn",
         espn2: "https://streamtpcloud.com/global2.php?stream=espn2",
@@ -254,41 +174,21 @@
         dsports: "https://streamtpcloud.com/global2.php?stream=dsports",
         tyc: "https://streamtpcloud.com/global2.php?stream=tycinternacional",
         laliga: "https://streamtpcloud.com/global2.php?stream=laligahypermotion",
-		nba: "https://streamtpcloud.com/global1.php?stream=nba2"
+        nba: "https://streamtpcloud.com/global2.php?stream=espn"
     };
 
-    const player = document.getElementById('player');
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const sidebar = document.getElementById('sidebar');
-
-    function play(channelKey, element) {
-        // Ocultar bienvenida y mostrar iframe
-        welcomeScreen.style.display = 'none';
-        player.style.display = 'block';
+    function play(channel) {
+        document.getElementById("welcome").style.display = "none";
+        // Usamos el ID de tu archivo funcional para que el JS no se pierda
+        document.getElementById("player").src = streams[channel];
         
-        // Cargar Stream
-        player.src = streams[channelKey];
-
-        // Manejo estético de la lista
-        document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-
-        // En móviles, cerrar el menú tras elegir
-        if(window.innerWidth <= 768) {
-            sidebar.classList.remove('show');
+        if(window.innerWidth < 768) {
+            document.getElementById("sidebar").classList.add("hidden");
         }
     }
 
     function toggleMenu() {
-        sidebar.classList.toggle('show');
-    }
-
-    function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
+        document.getElementById("sidebar").classList.toggle("hidden");
     }
     </script>
 </body>
