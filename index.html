@@ -385,8 +385,11 @@
                 </div>
                 <iframe 
                     id="player" 
-                    sandbox="allow-scripts allow-same-origin allow-presentation"
-                    allow="autoplay; fullscreen; encrypted-media"
+                    sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+                    allow="autoplay *; fullscreen *; encrypted-media *; picture-in-picture *"
+                    allowfullscreen
+                    frameborder="0"
+                    scrolling="no"
                     referrerpolicy="no-referrer">
                 </iframe>
             </div>
