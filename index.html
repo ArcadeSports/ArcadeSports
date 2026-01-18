@@ -5,149 +5,383 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arcade Sports Network</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #000;
-            color: #fff;
-            overflow: hidden;
-            background-image: linear-gradient(to bottom, #000, #111);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fff;
+            color: #1a1a1a;
+            overflow-x: hidden;
         }
         
-        /* Efecto CRT Scanlines (Optimizado para no bloquear el video) */
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            z-index: 100;
-            background-size: 100% 3px;
-            pointer-events: none;
-            opacity: 0.3;
-        }
+        .container { display: flex; flex-direction: column; min-height: 100vh; }
         
-        .container { display: flex; flex-direction: column; height: 100vh; }
-        
+        /* HEADER ESTILO PREMIER LEAGUE */
         header {
-            height: 60px;
-            background: #111;
+            background: #37003c;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             align-items: center;
-            padding: 0 20px;
-            border-bottom: 3px solid #00ffc6;
-            z-index: 110;
+            padding: 0 24px;
+            height: 70px;
         }
         
-        header h1 {
-            font-size: 16px;
-            color: #00ffc6;
-            text-shadow: 0 0 10px #00ffc6;
-            animation: flicker 2s infinite;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-
-        .main-content { display: flex; flex: 1; overflow: hidden; position: relative; }
         
-        /* SIDEBAR ESTILO ARCADE */
+        .logo-img {
+            height: 50px;
+            width: auto;
+            border-radius: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            margin-left: 48px;
+            flex: 1;
+        }
+        
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+            letter-spacing: 0.3px;
+        }
+        
+        .nav-links a:hover { color: #00ff85; }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            margin-left: auto;
+            padding: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .menu-toggle:active {
+            transform: scale(0.9);
+        }
+        
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 32px;
+            padding: 32px 24px;
+        }
+        
+        /* SIDEBAR MODERNO */
         .sidebar {
             width: 280px;
-            background: rgba(10, 10, 10, 0.95);
-            border-right: 2px solid #00ffc6;
-            overflow-y: auto;
-            transition: transform 0.3s steps(4);
-            z-index: 120;
-        }
-
-        .sidebar.hidden { transform: translateX(-100%); }
-
-        .channel-item {
-            padding: 15px;
-            border-bottom: 1px solid #222;
-            cursor: pointer;
-            font-size: 10px;
-            color: #00ffc6;
-            display: flex;
-            align-items: center;
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 102px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .channel-item::before { content: "► "; margin-right: 10px; }
-
-        .channel-item:hover {
-            background: #00ffc6;
-            color: #000;
+        .sidebar.hidden { transform: translateX(-320px); }
+        
+        .sidebar-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
         }
-
-        /* ÁREA DEL REPRODUCTOR */
+        
+        .channel-item {
+            padding: 14px 16px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .channel-item:hover {
+            background: #37003c;
+            color: #fff;
+            transform: translateX(4px);
+        }
+        
+        .channel-item.active {
+            background: #37003c;
+            color: #fff;
+        }
+        
+        .channel-badge {
+            background: #00ff85;
+            color: #37003c;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ÃREA DEL REPRODUCTOR */
         .player-area {
             flex: 1;
             background: #000;
+            border-radius: 12px;
+            overflow: hidden;
             position: relative;
+            min-height: 600px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
         }
-
-        /* CONFIGURACIÓN EXACTA DEL IFRAME DE TU ARCHIVO FUNCIONAL */
+        
         #player {
             width: 100%;
             height: 100%;
+            min-height: 600px;
             border: none;
             display: block;
         }
-
-        .menu-btn {
-            margin-left: auto;
-            color: #00ffc6;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .overlay-msg {
+        
+        .welcome-screen {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: none;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #37003c 0%, #1a001e 100%);
+            z-index: 10;
         }
-
-        .blink { animation: blinker 1s linear infinite; color: #ff0; font-size: 14px; }
-        @keyframes blinker { 50% { opacity: 0; } }
-        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-
-        /* Scrollbar Retro */
-        .sidebar::-webkit-scrollbar { width: 8px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #00ffc6; }
+        
+        .welcome-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 255, 133, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .welcome-icon::before {
+            content: "▶";
+            font-size: 48px;
+            color: #00ff85;
+        }
+        
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+        
+        /* FOOTER */
+        footer {
+            background: #37003c;
+            color: #fff;
+            padding: 24px;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        footer p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            
+            .main-content {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px 16px;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 999;
+                max-height: calc(100vh - 70px);
+                overflow-y: auto;
+                border-radius: 0;
+                background: rgba(248, 248, 248, 0.98);
+                backdrop-filter: blur(10px);
+                transform: translateX(0);
+                transition: opacity 0.3s, visibility 0.3s;
+            }
+            
+            .sidebar.hidden {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateX(0);
+            }
+            
+            .sidebar:not(.hidden) {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .player-area {
+                min-height: 400px;
+            }
+            
+            #player {
+                min-height: 400px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .header-content {
+                height: 60px;
+                padding: 0 16px;
+            }
+            
+            .logo-img {
+                height: 40px;
+            }
+            
+            .welcome-title {
+                font-size: 20px;
+                padding: 0 20px;
+                text-align: center;
+            }
+            
+            .welcome-subtitle {
+                font-size: 14px;
+                padding: 0 20px;
+            }
+            
+            .sidebar {
+                top: 60px;
+                max-height: calc(100vh - 60px);
+            }
+            
+            .player-area {
+                min-height: 300px;
+                border-radius: 8px;
+            }
+            
+            #player {
+                min-height: 300px;
+            }
+            
+            .channel-item {
+                font-size: 13px;
+                padding: 12px 14px;
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
         <header>
-            <h1>ARCADE SPORTS</h1>
-            <div class="menu-btn" onclick="toggleMenu()">☰</div>
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.png" alt="Arcade Sports" class="logo-img">
+                </div>
+                <nav class="nav-links">
+                    <a href="#live">EN VIVO</a>
+                    <a href="#highlights">DESTACADOS</a>
+                    <a href="#schedule">CALENDARIO</a>
+                    <a href="#stats">ESTADÍSTICAS</a>
+                </nav>
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            </div>
         </header>
         
         <div class="main-content">
             <div class="sidebar" id="sidebar">
-                <div class="channel-item" onclick="play('espn')">ESPN</div>
-                <div class="channel-item" onclick="play('espn2')">ESPN 2</div>
-                <div class="channel-item" onclick="play('espn3')">ESPN 3</div>
-                <div class="channel-item" onclick="play('espn4')">ESPN 4</div>
-                <div class="channel-item" onclick="play('espn5')">ESPN 5</div>
-                <div class="channel-item" onclick="play('espn6')">ESPN 6</div>
-                <div class="channel-item" onclick="play('espn7')">ESPN 7</div>
-                <div class="channel-item" onclick="play('espnmx')">ESPN MX</div>
-                <div class="channel-item" onclick="play('winsports')">WinSports</div>
-                <div class="channel-item" onclick="play('winplus')">WinSports +</div>
-                <div class="channel-item" onclick="play('dsports')">DirectSports</div>
-                <div class="channel-item" onclick="play('tyc')">TyC Sports</div>
-                <div class="channel-item" onclick="play('laliga')">LaLiga HyperMotion</div>
-                <div class="channel-item" onclick="play('nba')">NBA</div>
+                <div class="sidebar-title">Canales Disponibles</div>
+                <div class="channel-item" onclick="play('espn', this)">
+                    ESPN
+                    <span class="channel-badge">HD</span>
+                </div>
+                <div class="channel-item" onclick="play('espn2', this)">
+                    ESPN 2
+                    <span class="channel-badge">HD</span>
+                </div>
+                <div class="channel-item" onclick="play('espn3', this)">ESPN 3</div>
+                <div class="channel-item" onclick="play('espn4', this)">ESPN 4</div>
+                <div class="channel-item" onclick="play('espn5', this)">ESPN 5</div>
+                <div class="channel-item" onclick="play('espn6', this)">ESPN 6</div>
+                <div class="channel-item" onclick="play('espn7', this)">ESPN 7</div>
+                <div class="channel-item" onclick="play('espnmx', this)">
+                    ESPN MX
+                    <span class="channel-badge">MX</span>
+                </div>
+                <div class="channel-item" onclick="play('winsports', this)">WinSports</div>
+                <div class="channel-item" onclick="play('winplus', this)">WinSports +</div>
+                <div class="channel-item" onclick="play('dsports', this)">DirectSports</div>
+                <div class="channel-item" onclick="play('tyc', this)">TyC Sports</div>
+                <div class="channel-item" onclick="play('laliga', this)">
+                    LaLiga HyperMotion
+                    <span class="channel-badge">ES</span>
+                </div>
+                <div class="channel-item" onclick="play('nba', this)">
+                    NBA
+                    <span class="channel-badge">LIVE</span>
+                </div>
+                <div class="channel-item" onclick="play('dazntv', this)">DAZN TV</div>
+                <div class="channel-item" onclick="play('clarosports', this)">Claro Sports</div>
             </div>
             
             <div class="player-area">
-                <div id="welcome" class="overlay-msg">
-                    <p class="blink">INSERT COIN<br>SELECT CHANNEL</p>
+                <div id="welcome" class="welcome-screen">
+                    <div class="welcome-icon"></div>
+                    <h2 class="welcome-title">Bienvenido a Arcade Sports</h2>
+                    <p class="welcome-subtitle">Selecciona un canal para comenzar a ver</p>
                 </div>
                 <iframe 
                     id="player" 
@@ -157,6 +391,10 @@
                 </iframe>
             </div>
         </div>
+        
+        <footer>
+            <p>&copy; 2026 Arcade Sports Network. Todos los derechos reservados.</p>
+        </footer>
     </div>
     
     <script>
@@ -174,15 +412,27 @@
         dsports: "https://streamtpcloud.com/global2.php?stream=dsports",
         tyc: "https://streamtpcloud.com/global2.php?stream=tycinternacional",
         laliga: "https://streamtpcloud.com/global2.php?stream=laligahypermotion",
-        nba: "https://streamtpcloud.com/global2.php?stream=espn"
+        nba: "https://streamtpcloud.com/global2.php?stream=espn",
+        dazntv: "https://rereyano.ru/player/capo2/59",
+        clarosports: "https://streamtpcloud.com/global1.php?stream=eventos4"
     };
 
-    function play(channel) {
+    function play(channel, element) {
         document.getElementById("welcome").style.display = "none";
-        // Usamos el ID de tu archivo funcional para que el JS no se pierda
         document.getElementById("player").src = streams[channel];
         
-        if(window.innerWidth < 768) {
+        // Remover active de todos los items
+        document.querySelectorAll('.channel-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Agregar active al item seleccionado
+        if(element) {
+            element.classList.add('active');
+        }
+        
+        // En móvil, ocultar sidebar después de seleccionar
+        if(window.innerWidth < 968) {
             document.getElementById("sidebar").classList.add("hidden");
         }
     }
