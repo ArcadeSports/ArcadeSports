@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Sports Network</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fff;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        /* HEADER ESTILO PREMIER LEAGUE */
+        header {
+            background: #37003c;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            height: 70px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-img {
+            height: 50px;
+            width: auto;
+            border-radius: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            margin-left: 48px;
+            flex: 1;
+        }
+        
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: #00ff85;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00ff85;
+            transition: width 0.2s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 24px;
+            gap: 24px;
+        }
+        
+        /* SIDEBAR DE CANALES */
+        .sidebar {
+            width: 320px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 94px;
+            overflow-y: auto;
+            max-height: calc(100vh - 118px);
+        }
+        
+        .sidebar.hidden {
+            transform: translateX(-320px);
+        }
+        
+        .sidebar-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        
+        .channel-item {
+            padding: 14px 16px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .channel-item:hover {
+            background: #37003c;
+            color: #fff;
+            transform: translateX(4px);
+        }
+        
+        .channel-item.active {
+            background: #37003c;
+            color: #fff;
+        }
+        
+        .channel-badge {
+            background: #00ff85;
+            color: #37003c;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ÁREA DEL REPRODUCTOR */
+        .player-area {
+            flex: 1;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            min-height: 600px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        #player {
+            width: 100%;
+            height: 100%;
+            min-height: 600px;
+            border: none;
+            display: block;
+        }
+        
+        .welcome-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #37003c 0%, #1a001e 100%);
+            z-index: 10;
+        }
+        
+        .welcome-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 255, 133, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .welcome-icon::before {
+            content: "▶";
+            font-size: 48px;
+            color: #00ff85;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+        
+        /* PLAY BUTTON OVERLAY - FOR CHROME AUTOPLAY BLOCK */
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 20;
+            cursor: pointer;
+        }
+        
+        .play-overlay.visible {
+            display: flex;
+        }
+        
+        .play-overlay-icon {
+            width: 100px;
+            height: 100px;
+            background: #00ff85;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .play-overlay:hover .play-overlay-icon {
+            transform: scale(1.1);
+        }
+        
+        .play-overlay-icon::before {
+            content: "▶";
+            font-size: 40px;
+            color: #37003c;
+            margin-left: 8px;
+        }
+        
+        .play-overlay-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .play-overlay-subtext {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+            text-align: center;
+        }
+        
+        /* LOADING SPINNER */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 15;
+        }
+        
+        .loading-overlay.visible {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 255, 133, 0.3);
+            border-top-color: #00ff85;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* FOOTER */
+        footer {
+            background: #37003c;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .main-content {
+                flex-direction: column;
+                padding: 16px;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 70px;
+                width: 100%;
+                max-height: calc(100vh - 70px);
+                z-index: 100;
+                border-radius: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                background: rgba(248, 248, 248, 0.98);
+                backdrop-filter: blur(10px);
+            }
+            
+            .sidebar.hidden {
+                transform: translateX(0);
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+            
+            .sidebar:not(.hidden) {
+                transform: translateX(0);
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .player-area {
+                min-height: 400px;
+            }
+            
+            #player {
+                min-height: 400px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .header-content {
+                height: 60px;
+                padding: 0 16px;
+            }
+            
+            .logo-img {
+                height: 40px;
+            }
+            
+            .welcome-title {
+                font-size: 20px;
+                padding: 0 20px;
+                text-align: center;
+            }
+            
+            .welcome-subtitle {
+                font-size: 14px;
+                padding: 0 20px;
+            }
+            
+            .sidebar {
+                top: 60px;
+                max-height: calc(100vh - 60px);
+            }
+            
+            .player-area {
+                min-height: 300px;
+                border-radius: 8px;
+            }
+            
+            #player {
+                min-height: 300px;
+            }
+            
+            .channel-item {
+                font-size: 13px;
+                padding: 12px 14px;
+            }
+            
+            .play-overlay-icon {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .play-overlay-text {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.png" alt="Arcade Sports" class="logo-img">
+                </div>
+                <nav class="nav-links">
+                    <a href="#live">EN VIVO</a>
+                    <a href="#highlights">DESTACADOS</a>
+                    <a href="#schedule">CALENDARIO</a>
+                    <a href="#stats">ESTADÍSTICAS</a>
+                </nav>
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-title">Canales Disponibles</div>
+                <div class="channel-item" onclick="play('espn', this)">
+                    ESPN <span class="channel-badge">HD</span>
+                </div>
+                <div class="channel-item" onclick="play('espn2', this)">
+                    ESPN 2 <span class="channel-badge">HD</span>
+                </div>
+                <div class="channel-item" onclick="play('espn3', this)">
+                    ESPN 3
+                </div>
+                <div class="channel-item" onclick="play('espn4', this)">
+                    ESPN 4
+                </div>
+                <div class="channel-item" onclick="play('espn5', this)">
+                    ESPN 5
+                </div>
+                <div class="channel-item" onclick="play('espn6', this)">
+                    ESPN 6
+                </div>
+                <div class="channel-item" onclick="play('espn7', this)">
+                    ESPN 7
+                </div>
+                <div class="channel-item" onclick="play('espnmx', this)">
+                    ESPN MX <span class="channel-badge">MX</span>
+                </div>
+                <div class="channel-item" onclick="play('winsports', this)">
+                    WinSports
+                </div>
+                <div class="channel-item" onclick="play('winplus', this)">
+                    WinSports +
+                </div>
+                <div class="channel-item" onclick="play('dsports', this)">
+                    DirectSports
+                </div>
+                <div class="channel-item" onclick="play('tyc', this)">
+                    TyC Sports
+                </div>
+                <div class="channel-item" onclick="play('laliga', this)">
+                    LaLiga HyperMotion <span class="channel-badge">ES</span>
+                </div>
+                <div class="channel-item" onclick="play('nba', this)">
+                    NBA <span class="channel-badge">LIVE</span>
+                </div>
+                <div class="channel-item" onclick="play('dazntv', this)">
+                    DAZN TV
+                </div>
+                <div class="channel-item" onclick="play('clarosports', this)">
+                    Claro Sports
+                </div>
+            </div>
+            
+            <div class="player-area">
+                <div id="welcome" class="welcome-screen">
+                    <div class="welcome-icon"></div>
+                    <h2 class="welcome-title">Bienvenido a Arcade Sports</h2>
+                    <p class="welcome-subtitle">Selecciona un canal para comenzar a ver</p>
+                </div>
+                
+                <!-- Loading Overlay -->
+                <div id="loadingOverlay" class="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
+                
+                <!-- Play Button Overlay for Chrome Autoplay Block -->
+                <div id="playOverlay" class="play-overlay" onclick="resumePlayback()">
+                    <div class="play-overlay-icon"></div>
+                    <div class="play-overlay-text">Click para reproducir</div>
+                    <div class="play-overlay-subtext">El navegador bloqueó la reproducción automática</div>
+                </div>
+                
+                <!-- FIXED IFRAME: Removed restrictive sandbox, improved allow attributes -->
+                <iframe 
+                    id="player" 
+                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture; web-share"
+                    allowfullscreen 
+                    frameborder="0" 
+                    scrolling="no"
+                    referrerpolicy="origin"
+                    loading="eager"
+                    importance="high"
+                ></iframe>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 Arcade Sports Network. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Stream URLs configuration
+        const streams = {
+            espn: "https://streamtpcloud.com/global2.php?stream=espn",
+            espn2: "https://streamtpcloud.com/global2.php?stream=espn2",
+            espn3: "https://streamtpcloud.com/global2.php?stream=espn3",
+            espn4: "https://streamtpcloud.com/global2.php?stream=espn4",
+            espn5: "https://streamtpcloud.com/global2.php?stream=espn5",
+            espn6: "https://streamtpcloud.com/global2.php?stream=espn6",
+            espn7: "https://streamtpcloud.com/global2.php?stream=espn7",
+            espnmx: "https://streamtpcloud.com/global2.php?stream=espn2mx",
+            winsports: "https://streamtpcloud.com/global2.php?stream=winsports",
+            winplus: "https://streamtpcloud.com/global2.php?stream=winplus",
+            dsports: "https://streamtpcloud.com/global2.php?stream=dsports",
+            tyc: "https://streamtpcloud.com/global2.php?stream=tycinternacional",
+            laliga: "https://streamtpcloud.com/global2.php?stream=laligahypermotion",
+            nba: "https://streamtpcloud.com/global2.php?stream=espn",
+            dazntv: "https://rereyano.ru/player/capo2/59",
+            clarosports: "https://streamtpcloud.com/global1.php?stream=eventos4"
+        };
+
+        let currentChannel = null;
+        let isPlaying = false;
+
+        // Detect Chrome/Chromium browsers
+        function isChromiumBrowser() {
+            const ua = navigator.userAgent;
+            return /Chrome|Chromium|Edg|Opera|Brave/.test(ua) && !/Firefox/.test(ua);
+        }
+
+        // Play function with Chrome compatibility
+        function play(channel, element) {
+            currentChannel = channel;
+            const player = document.getElementById("player");
+            const welcome = document.getElementById("welcome");
+            const loadingOverlay = document.getElementById("loadingOverlay");
+            const playOverlay = document.getElementById("playOverlay");
+
+            // Hide welcome screen
+            welcome.style.display = "none";
+            playOverlay.classList.remove("visible");
+            
+            // Show loading
+            loadingOverlay.classList.add("visible");
+
+            // Set iframe source
+            player.src = streams[channel];
+
+            // Update active state
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            }
+
+            // Hide sidebar on mobile
+            if (window.innerWidth < 968) {
+                document.getElementById("sidebar").classList.add("hidden");
+            }
+
+            // Handle Chrome autoplay restrictions
+            if (isChromiumBrowser()) {
+                // For Chrome, we need to handle the case where autoplay is blocked
+                // The play overlay will be shown if the stream doesn't start automatically
+                setTimeout(() => {
+                    loadingOverlay.classList.remove("visible");
+                    // Check if iframe loaded successfully
+                    try {
+                        // Try to detect if content loaded
+                        if (player.contentDocument && player.contentDocument.body) {
+                            isPlaying = true;
+                        } else {
+                            // Show play button overlay as fallback
+                            playOverlay.classList.add("visible");
+                        }
+                    } catch (e) {
+                        // Cross-origin restriction, show play overlay
+                        playOverlay.classList.add("visible");
+                    }
+                }, 2000);
+            } else {
+                // For Firefox and other browsers, hide loading after a short delay
+                setTimeout(() => {
+                    loadingOverlay.classList.remove("visible");
+                    isPlaying = true;
+                }, 1500);
+            }
+        }
+
+        // Resume playback when user clicks the overlay
+        function resumePlayback() {
+            const player = document.getElementById("player");
+            const playOverlay = document.getElementById("playOverlay");
+            
+            playOverlay.classList.remove("visible");
+            
+            // Reload the iframe to trigger playback with user gesture
+            if (currentChannel && streams[currentChannel]) {
+                const currentSrc = player.src;
+                player.src = '';
+                setTimeout(() => {
+                    player.src = currentSrc;
+                }, 100);
+            }
+            
+            isPlaying = true;
+        }
+
+        // Toggle mobile menu
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("hidden");
+        }
+
+        // Listen for iframe load events
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = document.getElementById("player");
+            const loadingOverlay = document.getElementById("loadingOverlay");
+            
+            player.addEventListener('load', function() {
+                // Hide loading when iframe loads
+                setTimeout(() => {
+                    loadingOverlay.classList.remove("visible");
+                }, 500);
+            });
+        });
+
+        // Alternative: Open stream in new window for problematic browsers
+        function openInNewWindow(channel) {
+            const url = streams[channel];
+            if (url) {
+                window.open(url, '_blank', 'width=1200,height=700,scrollbars=yes,resizable=yes');
+            }
+        }
+    </script>
+</body>
+</html>
